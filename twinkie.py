@@ -427,3 +427,36 @@ def guarded(name):
     def deco(fn):
         def w(*a, **k):
             try: return fn(*a, **k)
+            except Exception as e: print(f"[skipped {name}] {type(e).__name__}: {e}"); return None
+        return w
+    return deco
+
+BENCH_TASKS = ["arc_easy", "arc_challenge", "hellaswag", "truthfulqa_mc2", "mmlu_elementary_mathematics", "mmlu_high_school_biology", "mmlu_astronomy", "gsm8k"]
+BIAS_TASKS = ["bbq", "crows_pairs_english"]      # if a task name is missing in your lm_eval version, run `lm_eval --tasks list`
+def run_lm_eval(path, tasks, limit):
+    import lm_eval
+    out = {}
+    for t in tasks:
+        try:
+            res = lm_eval.simple_evaluate(model="hf", model_args=f"pretrained={path},dtype=float16", tasks=[t], limit=limit, batch_size=8)
+            for tt, d in res["results"].items():
+                for k, v in d.items():
+                    if isinstance(v, (int, float)) and "stderr" not in k and any(s in k for s in ("acc", "exact_match", "mc1", "mc2", "pct", "bias", "score")): out[f"{tt}/{k}"] = round(v, 4)
+        except Exception as e: print(f"[skipped task {t}] {type(e).__name__}: {str(e)[:120]}")
+        gc.collect(); torch.cuda.empty_cache()
+    return out
+if RUN["benchmarks"]:
+    paths = {"twinkie": OURS_PATH}
+    if COMPARE_BASE: paths["base"] = BASE_PATH
+    for nm, p in paths.items(): METRICS[nm]["benchmarks"] = run_lm_eval(p, BENCH_TASKS + BIAS_TASKS, LMEVAL_LIMIT)
+    if COMPARE_BASE:
+        print("\nRETENTION (twinkie minus base). A big NEGATIVE delta means fine-tuning caused forgetting:")
+        for k, v in METRICS["twinkie"]["benchmarks"].items():
+            b = METRICS["base"]["benchmarks"].get(k)
+            if b is not None: print(f"  {k:55s} {v:7.3f} vs {b:7.3f}  delta {v-b:+.3f}")
+
+class HFModel:
+    def __init__(self, path):
+        self.path = path; self.t = AutoTokenizer.from_pretrained(path)
+        self.m = hf_load(path)
+    def prompt(self, msgs): return self.t.apply_chat_template(msgs, tokenize=False, add_generation_prompt=True, enable_thinking=False)
