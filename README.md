@@ -50,3 +50,29 @@ Twinkie is **not** just a raw model; it operates inside an audited, fail-closed 
 ## 📁 Repository Structure
 
 | File | Description |
+| :--- | :--- |
+| [`twinkie_core.py`](twinkie_core.py) | Core system prompts, Flesch-Kincaid metrics, helpline registries, and reference corpus. |
+| [`twinkie_data.py`](twinkie_data.py) | Seed generation, multi-turn dialogue clusters, refusal-balance audits, and dataset formatters. |
+| [`twinkie_safety.py`](twinkie_safety.py) | Full safety pipeline, kill switch, router engine, secondary guard integration, and session manager. |
+| [`twinkie_evalset.py`](twinkie_evalset.py) | 540+ held-out evaluation items, math validation set, leak check, and Wilson score gate analysis. |
+| [`test_twinkie.py`](test_twinkie.py) | Offline unit test suite covering router accuracy, edge cases, language gating, and release checks. |
+| [`twinkie.py`](twinkie.py) | Standalone training script with LoRA configs, validation loss, evaluation pipeline, and export logic. |
+| [`twinkie.ipynb`](twinkie.ipynb) | Google Colab interactive notebook with step-by-step cells pre-configured for T4 GPU execution. |
+
+---
+
+## 🚀 Quickstart: Training in Google Colab
+
+Twinkie-2B trains in under 5 minutes on a free Google Colab T4 GPU instance.
+
+### 1. Launch in Colab
+1. Open [Google Colab](https://colab.research.google.com).
+2. Click **File &rarr; Open notebook &rarr; GitHub** and enter your repository URL (or select **Upload** &rarr; choose `twinkie.ipynb`).
+3. Set your runtime: **Runtime &rarr; Change runtime type &rarr; T4 GPU**.
+
+### 2. Clone & Setup Working Directory
+In the first cell:
+```python
+!git clone https://github.com/<YOUR_GITHUB_USERNAME>/twinkie.git
+%cd twinkie
+```
