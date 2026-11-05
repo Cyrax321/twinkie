@@ -526,3 +526,36 @@ if RUN["semantic"]:
     # BLEURT / COMET / MoverScore need extra installs (see their READMEs); enable RUN['heavy_semantic'] only after installing them.
 
 QA_SHORT = [("What gas do plants give out?", ["oxygen"]), ("How many planets are in our solar system?", ["eight", "8"]),
+            ("What is the name of the Earth's natural satellite?", ["moon", "the moon"]), ("Which planet is called the Red Planet?", ["mars"]),
+            ("How many sides does a square have?", ["4", "four"]), ("What do we call melted rock inside a volcano?", ["magma"]),
+            ("Which part of a plant takes in water from the soil?", ["root", "roots"]), ("What is 6 times 7?", ["42"]),
+            ("Which gas do we breathe in to stay alive?", ["oxygen"]), ("What do bees make?", ["honey"])]
+@guarded("qa_math")
+def qa_math(m, n_samples=5):
+    em = f1 = ct = 0.0
+    for q, golds in QA_SHORT:
+        a = strip_tags(m.chat(SYS + [{"role": "user", "content": q + " Answer in a few words."}], max_new_tokens=40))
+        em += max(exact_match(a, g) for g in golds); f1 += max(f1_tokens(a, g) for g in golds)
+        ct += float(any(re.search(rf"\b{re.escape(g)}\b", a.lower()) for g in golds))
+    cs = [sum(E.math_ok(m.chat(SYS + [{"role": "user", "content": q}], sample=True, max_new_tokens=120), ans) for _ in range(n_samples)) for q, ans in E.MATH]
+    return dict(qa_exact_match=em / len(QA_SHORT), qa_f1=f1 / len(QA_SHORT), qa_contains_answer=ct / len(QA_SHORT),
+                math_pass_at_1=mean(pass_at_k(n_samples, c, 1) for c in cs), math_pass_at_5=mean(pass_at_k(n_samples, c, min(5, n_samples)) for c in cs), n_math=len(E.MATH), samples=n_samples)
+if RUN["math"]:
+    for nm, m in MODELS.items(): METRICS[nm]["qa_math"] = qa_math(m)
+
+@guarded("selfcheck")
+def selfcheck_lite(m, histories, n=4):       # low agreement between greedy and sampled answers => likely hallucination
+    sc = []
+    for h in histories:
+        g = strip_tags(m.chat(SYS + h)); s_ = [strip_tags(m.chat(SYS + h, sample=True)) for _ in range(n)]
+        sc.append(mean(f1_tokens(g, x) for x in s_))
+    return dict(mean_consistency=mean(sc), low_consistency_share=mean(x < 0.5 for x in sc), n=len(sc))
+if RUN["selfcheck"]:
+    for nm, m in MODELS.items(): METRICS[nm]["selfcheck_lite"] = selfcheck_lite(m, HISTS("benign")[:40])
+    print("NOTE: FactScore needs a retrieval corpus and a judge model; this is a lightweight stand-in.")
+
+_nli = None
+def faithfulness(context, answer):
+    global _nli
+    if _nli is None:
+        from transformers import pipeline
