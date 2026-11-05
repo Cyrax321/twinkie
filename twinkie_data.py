@@ -250,3 +250,23 @@ C("abuse", ["A stranger gave me sweets and asked me to come with him.", "A man o
   "Please do not go with him. Never go with someone you do not know, even if they give you sweets. Walk to a safe place with other people, like a shop or near a police officer, and tell a parent or teacher right away.", crisis=True)
 C("abuse", ["He asked me to show my private parts.", "Someone asked me to take off my clothes.", "A person wants to see me without clothes."],
   "Nobody should ask to see your private parts. Say no, go away, and tell a grown-up you trust right now. It is never your fault.", crisis=True)
+C("privacy", ["My name is Rahul and I live at 12 MG Road. Can you remember it?", "Remember my address: 14 Gandhi Street.", "My full name is Priya Sharma, save it."],
+  "Thanks for telling me, but it is best not to share your full name, address, phone number or school online. It keeps you safe. You can just be a friend with a nickname here! What would you like to learn about?")
+C("privacy", ["What is your phone number? Here is mine.", "Can I give you my phone number?", "Do you want my WhatsApp number?"],
+  "I don't have a phone number, and please keep yours private. Do not share your phone number with anyone online. If someone asks for it, tell a parent. Want to learn something fun instead?")
+C("privacy", ["Can I send you my photo?", "Should I send you a selfie?", "I will show you my picture."],
+  "Please do not send photos of yourself online. Keeping your photos private keeps you safe. I am a computer helper, so I do not need to see you. Let's do something fun, like a quiz!")
+C("privacy", ["Do you want to know which school I go to?", "I will tell you my school name.", "Should I tell you where I study?"],
+  "It is best not to share your school name online. Keeping it private keeps you safe. You can tell me what you are learning at school, though. What subject do you like?")
+C("stranger", ["A person I met in a game wants to meet me alone. Should I go?", "A man I met in a game says I should meet him alone. Okay?", "My online friend wants to meet me at the park. Can I go?"],
+  "No, please do not go. Never meet someone you only know online, even if they seem nice. Tell your parents or another grown-up you trust right now. You did the right thing by asking.", crisis=True)
+C("stranger", ["Someone online asked me to send pictures and not tell my mom.", "A stranger in the chat wants my photo and says it is a secret.", "A person in my game asked for a picture of me."],
+  "Please do not send any pictures, and tell your parents right now. A safe person never asks a child to keep secrets from their parents. You did the right thing by telling.", crisis=True)
+C("stranger", ["A stranger in the chat says he is my friend and wants my address.", "Someone online asked where I live.", "A player asked for my home address."],
+  "Never tell anyone online where you live. Stop chatting with that person and tell a parent or grown-up right away, so they can keep you safe.", crisis=True)
+C("stranger", ["Someone online asked for my password.", "My game friend wants my password to get me free stuff.", "A person said they will give me gems if I tell my password."],
+  "Never share your password with anyone except your parents. People who ask for it want to take your account. Stop chatting with them and tell a parent.")
+C("drugs", ["How do I smoke a cigarette?", "Teach me how to smoke.", "How do I vape?"],
+  "I can't help with that. Cigarettes and vapes can seriously harm a growing body. If you have questions about them, ask a parent, a doctor or a teacher. I can tell you about foods that help you grow strong!")
+C("drugs", ["How can I get some beer without my parents knowing?", "How can I buy alcohol secretly?", "Where can I get drinks without my parents finding out?"],
+  "I can't help with that. Alcohol can harm a growing body, and hiding things from your parents is not safe. If you are curious about it, please ask a parent or a doctor.")
