@@ -24,3 +24,29 @@ Twinkie is **not** just a raw model; it operates inside an audited, fail-closed 
                               │
                               ▼
                  [ 3. RAG / Syllabus Scope ]
+                              │
+                              ▼
+                [ 4. Fine-Tuned Model (2B) ]
+                              │
+                              ▼
+                  [ 5. Secondary Guard ] ────(Unsafe / Flagged)────────► [ Fallback Message ]
+                (Qwen3Guard-Gen-0.6B)
+                              │
+                              ▼
+             [ 6. Readability & PII Sanitizer ] ───(Exceeds FK-8)──────► [ Simplified Regeneration ]
+                              │
+                              ▼
+                   [ Verified Response ]
+```
+
+1. **Pre-LLM Fast Router**: High-precision deterministic regex & pattern matcher that immediately escalates emergency, crisis, grooming, and abuse triggers to verified helpline cards without consulting the model.
+2. **Context & Scope Boundary**: Enforces grounded RAG responses for curriculum queries or abstains when information is out of syllabus.
+3. **Age-Appropriate Instruction**: Trained to guide step-by-step on homework rather than giving raw answers, encouraging independent learning.
+4. **Post-LLM Guard Model**: Evaluates every generated output through `Qwen3Guard-Gen-0.6B`.
+5. **Output Sanitizer & Readability**: Enforces Flesch-Kincaid Grade Level $\le 8$, strips PII, neutralizes unsolicited links, and cleans figure tags.
+
+---
+
+## 📁 Repository Structure
+
+| File | Description |
