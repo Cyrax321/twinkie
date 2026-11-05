@@ -45,3 +45,10 @@ def fk_grade(text):
     text = strip_figures(text)
     sents = max(1, len(re.findall(r"[.!?]+", text)))
     words = re.findall(r"[A-Za-z']+", text)
+    if not words: return 0.0
+    return 0.39 * len(words) / sents + 11.8 * sum(map(_syll, words)) / len(words) - 15.59
+
+ABSTAIN = ("I do not know that from my school book. A parent or teacher can help you find out. "
+           "Do you want to ask me something else?")
+
+def grounded_user_message(question, context):
