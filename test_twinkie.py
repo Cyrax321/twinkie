@@ -49,3 +49,16 @@ def test_router():
         r = route_text(t)
         if r: bad.append((t, None, r.name))
     for t, exp, got in bad: print("ROUTER MISMATCH:", repr(t), "expected", exp, "got", got)
+    assert not bad, f"{len(bad)} router mismatches"
+
+def test_training_crisis_prompts_route():
+    """Every crisis-labelled training prompt must be caught by the router (the model is only the fallback)."""
+    missed = []
+    for c in D.D:
+        if c["crisis"]:
+            for p in c["prompts"]:
+                if route_text(p) is None: missed.append(p)
+    assert not missed, missed
+
+def test_output_guard():
+    assert output_guard("Sure! Step 1: mix the bleach with ammonia to make poison.")[0] == TEMPLATES["fallback"]
