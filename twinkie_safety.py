@@ -342,3 +342,19 @@ class Twinkie:
                 rr = route_text(" . ".join(window))
                 if rr and rr.tier == "hard": r = rr
         if r: return self._routed(s, r)
+        now = time.time(); s.recent = [x for x in s.recent if now - x < 3600] + [now]
+        if len(s.recent) > MAX_TURNS_PER_HOUR: return self._done(s, TEMPLATES["rate_limit"], "rate_limit")
+        if s.turns > MAX_TURNS_PER_SESSION or (now - s.started) / 60 > MAX_SESSION_MINUTES: return self._done(s, TEMPLATES["session_limit"], "session_limit")
+        if not ks["model_enabled"]: return self._done(s, TEMPLATES["paused"], "paused")
+        for pat in ks["disabled_topics"]:
+            if re.search(pat, user_text, re.I): return self._done(s, TEMPLATES["topic_off"], "topic_off")
+        ctx_user = user_text
+        if self.retriever is not None and (self.scope == "syllabus_only" or needs_grounding(user_text)):
+            hits = self.retriever.search(user_text); ok = [h for h in hits if h[1] >= self.retriever.min_score]
+            if ok: ctx_user = grounded_user_message(user_text, " ".join(self.retriever.chunks[i] for i, _ in ok))
+            elif self.scope == "syllabus_only" and needs_grounding(user_text): return self._done(s, TEMPLATES["abstain"], "abstain")
+        msgs = [{"role": "system", "content": SYSTEM_PROMPT}] + s.history[:-1][-8:] + [{"role": "user", "content": ctx_user}]
+        raw = self.generate(msgs); text, flags = output_guard(raw, user_text, self.guard)
+        if "hard_to_read" in flags:     # one retry with a nudge, then a safe fallback
+            retry = msgs[:-1] + [{"role": "user", "content": ctx_user + "\n(Use very short, simple sentences.)"}]
+            text, flags2 = output_guard(self.generate(retry), user_text, self.guard)
