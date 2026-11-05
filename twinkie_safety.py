@@ -264,3 +264,19 @@ def load_killswitch(path):
     if not path or not os.path.exists(path): return dict(DEFAULT_KILL)
     try: return {**DEFAULT_KILL, **json.load(open(path, encoding="utf-8"))}
     except Exception: return {**DEFAULT_KILL, "model_enabled": False, "reason": "kill switch file unreadable"}
+
+MAX_TURNS_PER_SESSION, MAX_SESSION_MINUTES, MAX_TURNS_PER_HOUR = 40, 30, 60     # suggested; set with parents and teachers
+@dataclass
+class Session:
+    sid: str = field(default_factory=lambda: uuid.uuid4().hex[:12])
+    history: list = field(default_factory=list)
+    started: float = field(default_factory=time.time)
+    recent: list = field(default_factory=list)
+    elevated: bool = False            # a hard route fired earlier in this session
+    last_route_idx: int = -1          # index in history of the last user turn that routed
+    turns: int = 0
+
+class EventLog:
+    """Minimal logging (DPDP): category, tier, time, session id. Text is stored only if log_text=True (off by default)."""
+    def __init__(self, path="events.jsonl", log_text=False): self.path, self.log_text = path, log_text
+    def __call__(self, ev):
