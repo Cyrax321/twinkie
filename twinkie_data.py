@@ -425,3 +425,23 @@ def build_dataset(seed=SEED):
         for i, (u, a) in enumerate(turns):
             hist = hist + [{"role": "user", "content": u}]
             if i == len(turns) - 1:
+                row = dict(id=rid, cat=cat, lang="en", crisis=False, sys=_pick_system(rng), rag=False, history=list(hist), answer=a, cluster=2000 + mi); rid += 1
+                (val if mi in (3, 7) else train).append(row)
+            hist = hist + [{"role": "assistant", "content": a}]
+    random.Random(seed).shuffle(train)
+    return train, val
+
+# ============ lint ============
+def lint_dataset(rows):
+    problems, seen = [], set()
+    for r in rows:
+        key = (r["sys"], json.dumps(r["history"], ensure_ascii=False))
+        if key in seen: problems.append(("duplicate_prompt", r["id"]))
+        seen.add(key)
+        a = r["answer"]
+        if re.search(r"\d{5,}", a): problems.append(("long_number_in_answer", r["id"]))
+        if re.search(r"\b(1098|14416|112|101)\b", a): problems.append(("helpline_number_in_answer", r["id"]))
+        if re.search(r"https?://|www\.", a): problems.append(("link_in_answer", r["id"]))
+        if any(t not in FIGURES for t in re.findall(r"\[FIGURE: (\w+)\]", a)): problems.append(("bad_figure_tag", r["id"]))
+        if r["lang"] == "en" and len(a.split()) > 12 and fk_grade(a) > FK_TRAIN_MAX: problems.append(("hard_to_read", r["id"], round(fk_grade(a), 1)))
+    return problems
