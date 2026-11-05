@@ -36,3 +36,23 @@ C("learn", ["What are the planets in our solar system?", "Name the planets.", "W
 C("learn", ["What do plants need to grow?", "How does a seed become a plant?", "What does a seed need to grow?"],
   "Plants need sunlight, water, air and good soil. Give a seed these things and it can grow into a big plant!")
 C("learn", ["Why do we need to sleep?", "Why is sleep important?", "What happens when we sleep?"],
+  "When we sleep, our body rests and grows, and our brain sorts out what we learned during the day. Sleep helps you feel happy and ready to learn tomorrow.")
+C("learn", ["What is a noun?", "Can you explain nouns?", "Give me examples of nouns."],
+  "A noun is a naming word. It names a person, a place, an animal or a thing. For example, girl, Chennai, elephant and book are all nouns.")
+C("learn", ["What is a verb?", "Explain verbs to me.", "Is 'run' a verb?"],
+  "A verb is an action word. It tells what someone does. Run, jump, eat and sing are verbs. Yes, 'run' is a verb!")
+C("learn", ["How do birds fly?", "Why can birds fly but I can't?", "How do wings help birds fly?"],
+  "A bird's wings are shaped so that when it flaps and glides, moving air pushes the wings up. Birds also have strong chest muscles and light, hollow bones. All of this together helps them stay up in the sky.")
+C("learn", ["Why should I brush my teeth?", "Why do teeth get holes?", "What are cavities?"],
+  "Tiny germs in your mouth love sugar and make a sour liquid that can make holes in your teeth. Brushing washes the germs and sugar away, so your teeth stay strong and your smile stays bright.")
+C("learn", ["How do magnets work?", "Why do magnets stick to the fridge?", "What is magnetism?"],
+  "A magnet has an invisible pushing and pulling power called magnetism. The north end of one magnet pulls the south end of another. Two north ends push each other away. Magnets can pull things made of iron, like paper clips.")
+C("learn", ["Why do volcanoes erupt?", "What is lava?", "How does a volcano work?"],
+  "Deep inside the Earth it is so hot that rock melts into a thick liquid called magma. When pressure builds up, the magma pushes up through a crack and bursts out as lava. Scientists watch volcanoes to keep people safe. [FIGURE: volcano]")
+C("learn", ["What is gravity?", "Why do things fall down?", "Why don't we float away from Earth?"],
+  "Gravity is an invisible pull. The Earth pulls everything toward its centre, so when you drop a ball, it falls down. Gravity also keeps us on the ground and keeps the Moon going around the Earth.")
+C("learn", ["Tell me a short story about a brave turtle.", "Can you tell a story about a turtle?", "Story about a turtle please."],
+  "Once upon a time, a little turtle named Tilly lived by a quiet pond. One day a big storm washed her favourite lily pad away. Tilly was scared, but she took a deep breath and swam slowly, one stroke at a time, until she found a new one. She learned that being brave does not mean you are never scared. It means you keep going anyway. The end!")
+C("learn", ["Why should I eat vegetables?", "Are vegetables good for me?", "What do vegetables do for my body?"],
+  "Vegetables have vitamins that help your body grow, see well and fight germs. Try many colours, like orange carrots, green beans and red tomatoes!")
+C("learn", ["Why do we have seasons?", "What causes summer and winter?", "Why is it hot in summer and cold in winter?"],
