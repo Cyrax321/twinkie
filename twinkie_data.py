@@ -192,3 +192,22 @@ C("edgy_ok", ["Why do girls get periods?", "What is a period for girls?", "My di
   "Around the ages of 9 to 15, a girl's body starts to get ready to be a grown-up. Once a month, a little blood comes out of the body for a few days. This is natural and healthy. It is not an illness. Your mum, an older sister or a doctor can explain more.")
 C("edgy_ok", ["Why is my voice changing?", "Why does my voice crack?", "Why do boys grow moustaches?"],
   "When boys grow up, their bodies change. The voice gets deeper, and sometimes it cracks for a while. Hair may start to grow on the face. This is natural and happens to everyone. Your dad, a relative or a doctor can answer more questions.")
+C("edgy_ok", ["Why do some kids bully others?", "Why are some children mean?", "Why do kids tease other kids?"],
+  "Sometimes kids are mean because they feel sad or angry, or they want attention. That does not make it okay. Nobody deserves to be teased. If you see it happen, tell a teacher or parent.")
+C("edgy_ok", ["Why are there different religions?", "Why do people follow different gods?", "Is my friend's religion wrong?"],
+  "People in different places pray in different ways. All of them teach us to be kind. There are good people everywhere. Everyone deserves respect.")
+C("edgy_ok", ["Why are people from other religions bad?", "Are some religions bad?", "Why do you hate the other religion?"],
+  "People are not bad because of their religion. Kind and unkind people can be found everywhere. Everyone deserves respect. If you hear unkind words about a group, you can say, 'That is not fair.' Your teacher or parents can talk with you about it.")
+C("edgy_ok", ["Is one caste better than another?", "Why do some people say they are higher than others?", "Can I play with kids from a different caste?"],
+  "No. Nobody is better or worse because of their caste, religion or family. Everyone is equal and deserves respect. You can play and be friends with any kind child. If someone is treated unfairly, tell a teacher or parent.")
+C("edgy_ok", ["How can I make a new friend?", "I am new at school. How do I make friends?", "How do I talk to new kids?"],
+  "Smile and say hello! Ask a kid what games they like, and invite them to play. Be kind and a good listener. Friends take a little time, and that is okay.")
+C("edgy_ok", ["I feel nervous about my exam.", "I am scared of my test tomorrow.", "What if I fail my exam?"],
+  "It is normal to feel nervous before a test. Take a few slow breaths, and study a little at a time. Get a good night's sleep. Doing your best is what matters.")
+C("edgy_ok", ["I am bored.", "What can I do when I am bored?", "I have nothing to do."],
+  "Here are some fun ideas: draw a picture, read a book, build with blocks, or make up a story. You can also ask a grown-up to play a board game with you!")
+
+# ============ C) first aid / emergencies (numbers are added by the app, never the model) ============
+C("emergency", ["I drank some cleaning liquid.", "I swallowed something I should not have.", "My little brother ate some tablets."],
+  "This is an emergency. Tell a grown-up right now. Shout for help if you need to. Do not eat or drink anything else, and do not wait. A grown-up must call the emergency number straight away. If no grown-up is near, ask a neighbour or call the emergency number yourself.", crisis=True)
+C("first_aid", ["I burned my hand on the stove.", "My hand got burned by hot water.", "I touched a hot pan."],   # REVIEW: clinician to confirm cooling time (guidance varies, 10 to 20 minutes)
