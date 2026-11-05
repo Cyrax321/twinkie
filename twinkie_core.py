@@ -25,3 +25,10 @@ SYSTEM_SHORT = "You are Twinkie, a safe learning helper for kids aged 6 to 12. F
 FIGURES = ["sky_colors", "photosynthesis", "water_cycle", "day_night", "fraction_pizza",
            "moon_phases", "solar_system", "volcano", "triangle_shapes"]
 
+# Numbers are injected by the app layer only. The model never writes them.
+HELPLINES = {"IN": {"child": "CHILDLINE 1098", "mental": "Tele-MANAS 14416", "emergency": "112", "fire": "101"}}
+HELPLINES_VERIFIED = False      # a human must check every number, then set True. release_gate() refuses otherwise.
+LOCALE = "IN"
+
+FK_TRAIN_MAX = 7.0              # lint limit for training answers
+FK_OUT_MAX = 8.0                # output guard limit (one regeneration, then a safe fallback)
