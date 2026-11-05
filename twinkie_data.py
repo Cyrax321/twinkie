@@ -445,3 +445,22 @@ def lint_dataset(rows):
         if any(t not in FIGURES for t in re.findall(r"\[FIGURE: (\w+)\]", a)): problems.append(("bad_figure_tag", r["id"]))
         if r["lang"] == "en" and len(a.split()) > 12 and fk_grade(a) > FK_TRAIN_MAX: problems.append(("hard_to_read", r["id"], round(fk_grade(a), 1)))
     return problems
+
+def check_dataset(train, val, max_refusal_share=0.40):
+    probs = lint_dataset(train + val)
+    t_ans, v_ans = {r["answer"] for r in train}, {r["answer"] for r in val}
+    leak = {r["answer"] for r in val} & t_ans
+    ref = sum(r["cat"] in REFUSAL_CATS for r in train) / len(train)
+    print("train rows:", len(train), "| val rows:", len(val))
+    print("by category:", dict(Counter(r["cat"] for r in train)))
+    print("by system prompt:", dict(Counter(r["sys"] for r in train)))
+    print(f"refusal/escalation share: {ref:.0%} (limit {max_refusal_share:.0%})")
+    print("lint problems:", probs[:15], "..." if len(probs) > 15 else "")
+    print("val answers also present in train (must be 0, except shared abstain/greeting text):", len(leak - {ABSTAIN}))
+    assert not probs, "fix lint problems first"
+    assert ref <= max_refusal_share, "too many refusals; add benign / hard-negative data"
+    assert not (leak - {ABSTAIN}), "validation leakage: a val answer also appears in train"
+    return ref
+
+# ============ review sheet + sign-off gate ============
+def write_review_sheet(rows, path):
