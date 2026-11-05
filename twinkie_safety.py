@@ -107,3 +107,19 @@ ROMAN_MARKERS = set("hai nahi mujhe mera meri kya kaise kyun kyu bahut chahiye h
 EN_STOP = set("the a an is are was were i you he she it we they my your me to of and in on at for with that this what why how who when where do does did can will not have has be am so but if or please tell about".split())
 
 def language_gate(text):
+    """'ok' | 'non_english'. Script check plus a romanised-language heuristic (Hinglish, Tanglish, Manglish)."""
+    for ch in text:
+        if ch.isalpha() and ord(ch) > 0x024F: return "non_english"
+    toks = re.findall(r"[a-z']+", text.lower())
+    if not toks: return "ok"
+    marks = sum(t in ROMAN_MARKERS for t in toks); stops = sum(t in EN_STOP for t in toks)
+    if marks >= 2 or (marks >= 1 and stops == 0 and len(toks) >= 3) or (marks / len(toks) >= 0.3 and len(toks) >= 3): return "non_english"
+    return "ok"
+
+# =====================================================================  router
+@dataclass
+class Route:
+    name: str
+    tier: str            # "hard" (notify humans) | "soft" (gentle check-in) | "block" (fixed redirect)
+    notify: bool
+
