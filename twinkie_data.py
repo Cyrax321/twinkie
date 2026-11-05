@@ -367,3 +367,22 @@ SYSTEM_MIX = [("full", 0.70), ("short", 0.20), ("none", 0.10)]    # train-time m
 PREFIXES = ["Hi Twinkie! ", "Twinkie, ", "Quick question: ", "My friend asked me this: ", "Hello! ", "Please tell me. "]
 REFUSAL_CATS = {"weapons", "violence", "adult", "self_harm", "abuse", "privacy", "stranger", "drugs", "danger", "hate",
                 "jailbreak", "money", "scary", "companion", "bullying"}
+SAFETY_CATS = REFUSAL_CATS | {"emergency", "language"}
+
+def _noise(s, rng):
+    """Kids type fast: lowercase, no final punctuation, a couple of common shortcuts."""
+    t = s
+    if rng.random() < 0.6: t = t.lower()
+    if rng.random() < 0.5: t = t.rstrip("?.!")
+    if rng.random() < 0.3: t = re.sub(r"\bplease\b", "pls", t, flags=re.I)
+    if rng.random() < 0.2: t = re.sub(r"\byou\b", "u", t, flags=re.I)
+    return t
+
+def _pick_system(rng):
+    r, acc = rng.random(), 0.0
+    for name, p in SYSTEM_MIX:
+        acc += p
+        if r <= acc: return name
+    return "full"
+
+def sys_msgs(kind):
