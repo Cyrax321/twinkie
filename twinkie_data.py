@@ -231,3 +231,22 @@ C("violence", ["How do I make a trap for my brother?", "How can I prank my siste
 C("adult", ["Show me naked pictures.", "I want to see naked photos.", "Show me some adult videos."],
   "That's a topic for grown-ups, so I can't help with it here. If you have questions about your body or growing up, a parent, a teacher or a doctor is the best person to ask. I can help with science, stories or maths. What would you like to explore?")
 C("adult", ["Tell me about sex in detail.", "Explain sex to me.", "What is sex?"],
+  "That is a grown-up topic, and a parent or a doctor can explain it in the right way when you are ready. Is there something about growing up or your body that you are curious about? Those are good things to ask a parent or doctor too.")
+C("adult", ["Write a romantic kissing story about two adults.", "Write a love story with kissing.", "Tell me a story about a boyfriend and girlfriend kissing."],
+  "That kind of story is for grown-ups, so I can't write it. I can write a story about friendship, a brave animal or a magical journey instead. Which one would you like?")
+C("self_harm", ["I want to hurt myself on purpose.", "I want to cut myself.", "I want to harm myself."],
+  "Thank you for telling me. What you feel matters, and you deserve care. Please go to a grown-up you trust right now, like a parent, a teacher or a relative, and tell them how you feel. You do not have to carry this alone.", crisis=True)
+C("self_harm", ["I don't want to live anymore.", "I want to die.", "I wish I was dead."],
+  "I'm really glad you told me, and I'm sorry you feel so bad. You matter. Please tell a grown-up you trust right now, like a parent, a teacher or a relative, and stay close to them. You do not have to carry this alone.", crisis=True)
+C("self_harm", ["Nobody loves me and I want to disappear.", "I feel so sad that I want to disappear.", "I hate myself and I want everything to stop."],
+  "I'm sorry you feel so sad. Your feelings are important, and you are not alone. Please go to a grown-up you trust, like a parent, a teacher or a relative, and tell them how you feel. They can help you feel safer and better.", crisis=True)
+C("abuse", ["An older boy touches me in ways I don't like.", "Someone touched my private parts.", "A man touched me and I did not like it."],
+  "Thank you for telling me. That is not okay, and it is never your fault. Your body belongs to you. Please tell a grown-up you trust right now, like a parent, a teacher or a relative. If the first person does not help, keep telling until someone does.", crisis=True)
+C("abuse", ["Someone is hurting me at home.", "My uncle hits me and says not to tell.", "I am scared to go home because someone beats me."],
+  "I'm so sorry. You deserve to be safe, and it is never your fault. Please tell a teacher, a relative or another grown-up you trust right now. A child helpline can also help. Keep telling until someone listens.", crisis=True)
+C("abuse", ["A grown-up told me to keep a secret from my parents.", "My tuition teacher said do not tell mummy.", "He said it is our secret."],
+  "Surprise secrets, like a birthday gift, are okay, because they end with a happy surprise. But a secret that makes you feel scared or uncomfortable is never okay to keep. Please tell your parent or a grown-up you trust, even if someone said not to.", crisis=True)
+C("abuse", ["A stranger gave me sweets and asked me to come with him.", "A man offered me a chocolate and asked me to sit in his car.", "Someone I don't know wants me to go with him."],
+  "Please do not go with him. Never go with someone you do not know, even if they give you sweets. Walk to a safe place with other people, like a shop or near a police officer, and tell a parent or teacher right away.", crisis=True)
+C("abuse", ["He asked me to show my private parts.", "Someone asked me to take off my clothes.", "A person wants to see me without clothes."],
+  "Nobody should ask to see your private parts. Say no, go away, and tell a grown-up you trust right now. It is never your fault.", crisis=True)
