@@ -97,3 +97,36 @@ tok = getattr(tokenizer, "tokenizer", tokenizer)    # processor -> inner tokeniz
 
 leaf_names = Counter(n.split(".")[-1] for n, m in model.named_modules() if isinstance(m, torch.nn.Linear))
 print("Linear layer names in model:", dict(leaf_names))
+TARGETS = ["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"]
+missing_t = [t for t in TARGETS if t not in leaf_names]
+if missing_t: print("WARNING: these targets do not exist in this model:", missing_t, "-> compare with the official notebook")
+TARGETS = [t for t in TARGETS if t in leaf_names] or TARGETS
+
+model = FastLanguageModel.get_peft_model(
+    model, r=LORA_R, target_modules=TARGETS, lora_alpha=LORA_R, lora_dropout=0, bias="none",
+    use_gradient_checkpointing="unsloth", random_state=SEED, max_seq_length=MAX_SEQ_LEN)
+model.print_trainable_parameters()
+
+# %%
+# Cell 4: render text so TRAIN prompt == INFERENCE prompt, then verify
+from datasets import Dataset
+
+def render_prompt(msgs):
+    return tok.apply_chat_template(msgs, tokenize=False, add_generation_prompt=True, enable_thinking=False)
+
+_probe = render_prompt([{"role": "user", "content": "x"}])
+RESPONSE_PART = _probe[_probe.rfind("<|im_start|>assistant"):]      # includes the empty think block if the template adds one
+INSTRUCTION_PART = "<|im_start|>user\n"
+print("RESPONSE_PART  =", repr(RESPONSE_PART))
+
+def render_train(row): return render_prompt(D.to_msgs(row)) + row["answer"] + "<|im_end|>\n"
+def build_ds(rows): return Dataset.from_list([{"text": render_train(r)} for r in rows])
+
+train_ds, val_ds = build_ds(train_rows), build_ds(val_rows)
+print("=== training example ===\n" + train_ds[0]["text"])
+assert train_ds[0]["text"].startswith(render_prompt(D.to_msgs(train_rows[0]))), "train/inference prompt mismatch"
+rag_i = next(i for i, r in enumerate(train_rows) if r["rag"])
+assert train_ds[rag_i]["text"].startswith(render_prompt(D.to_msgs(train_rows[rag_i]))), "grounded-row prompt mismatch"
+print("OK: training text starts with the exact inference prompt (plain and grounded rows)")
+print("max tokens in train set:", max(len(tok(t)["input_ids"]) for t in train_ds["text"]))
+
