@@ -361,3 +361,36 @@ with open(f"{OUT}/comparison.csv", "w", newline="", encoding="utf-8") as f:
     for name, items in systems.items():
         for i in items: w.writerow([name, i["kind"], i["tag"], i["prompt"], i["text"], i["ok"]])
 print("wrote comparison.csv. Read the disagreements by hand; scoring is only a first filter.")
+# Forgetting check: see BENCH_TASKS in the extended suite below (retention delta vs base).
+
+# %%
+# Cell 10: RELEASE GATE. Nothing is packaged unless every blocker is cleared.
+signoff_bad = D.require_signoff(f"{OUT}/review_sheet.csv")          # the sheet must come back from the reviewer with names and Y/N filled in
+blockers = S.release_gate(signoff_bad=signoff_bad, gate_report=GATE_REPORT, tests_ok=TESTS_OK, enforce=False)
+print("RELEASE BLOCKERS:" if blockers else "no blockers", *[f"\n - {b}" for b in blockers])
+DRAFT = bool(blockers)                                            # a draft build is allowed for internal testing only and is labelled as such
+
+RELEASE = f"{OUT}_release" + ("_DRAFT_NOT_FOR_CHILDREN" if DRAFT else "")
+shutil.rmtree(RELEASE, ignore_errors=True)
+shutil.copytree(f"{OUT}/merged_16bit", f"{RELEASE}/merged"); shutil.copytree(f"{OUT}/adapter", f"{RELEASE}/adapter")
+for f in REQUIRED[:4] + (["killswitch.json"] if os.path.exists("killswitch.json") else []): shutil.copy(f, f"{RELEASE}/{f}")
+for root, _, files in os.walk(RELEASE):
+    for fn in files:
+        p = os.path.join(root, fn)
+        if fn == "README.md": os.remove(p); continue
+        if fn.endswith(".json") and fn != "tokenizer.json":
+            try: d = json.load(open(p, encoding="utf-8"))
+            except Exception: continue
+            if not isinstance(d, dict): continue
+            changed = False
+            for k in [k for k in d if "unsloth" in k.lower()]: d.pop(k); changed = True
+            b = d.get("base_model_name_or_path")
+            if isinstance(b, str) and b.lower().startswith("unsloth/"): d["base_model_name_or_path"] = BASE_OFFICIAL; changed = True
+            if changed: json.dump(d, open(p, "w", encoding="utf-8"), indent=2, ensure_ascii=False)
+open(f"{RELEASE}/README.md", "w", encoding="utf-8").write(
+    f"# Twinkie{' (DRAFT: NOT FOR USE WITH CHILDREN)' if DRAFT else ''}\n\nA child-safe learning assistant for ages 6 to 12, fine-tuned from {BASE_OFFICIAL}.\n\n"
+    "Intended use: simple educational answers with safety redirects. MUST be deployed behind the router, output guard, kill switch and limits in twinkie_safety.py; "
+    "the model alone is not a safety system. Limitations: small seed dataset, English only (other languages get a polite redirect), may be wrong.\n\n"
+    + ("Open blockers:\n" + "\n".join(f"- {b}" for b in blockers) + "\n\n" if DRAFT else "") + f"data sha256: {DATA_SHA}\nconfig fingerprint: {FINGERPRINT}\nSee the base model's license for terms.\n")
+hits = []
+for root, _, files in os.walk(RELEASE):
