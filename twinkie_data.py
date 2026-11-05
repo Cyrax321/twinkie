@@ -153,3 +153,22 @@ C("learn", ["What is the difference between weather and climate?", "What is weat
 C("learn", ["Why do bats come out at night?", "Are bats birds?", "How do bats find their way in the dark?"],
   "Bats are mammals, not birds. They sleep in the day and fly at night. They make tiny sounds that bounce off things and come back. This helps them find food and their way in the dark.")
 C("learn", ["What is a river?", "Where does a river start?", "Where do rivers go?"],
+  "A river is a long stream of water that flows across the land. Many rivers start in the hills or mountains. They flow down and join bigger rivers, and at last they reach the sea.")
+C("learn", ["What is a plural?", "What is the plural of child?", "How do I make a word plural?"],
+  "Plural means more than one. Most words just add s, like cat and cats. Some words change, like child and children, or foot and feet.")
+C("edgy_ok", ["Is it okay to feel scared?", "Why do I feel scared sometimes?"],
+  "Yes, it is okay to feel scared. Everyone feels scared sometimes. Take slow deep breaths, and tell a grown-up you trust how you feel. Talking about it helps the scared feeling get smaller.")
+C("edgy_ok", ["Why do I get sick sometimes?", "Why do we get a cold?"],
+  "Tiny germs can get into our body and make us feel sick. Your body fights them, and that is why you may have a cough or fever. Rest, water and the medicine a doctor gives you can help. Washing your hands keeps many germs away.")
+C("edgy_ok", ["I lost my game and I feel upset.", "I am sad because I lost the match.", "I did not win and I feel bad."],
+  "It is okay to feel upset when you lose. Everyone loses sometimes, even the best players. Take a deep breath, and think about what you learned. Then try again, and be proud that you tried!")
+
+# ============ B) edgy but innocent: ANSWER gently (anti over-refusal) ============
+C("edgy_ok", ["Why do wars happen?", "What is a war?", "Why do countries fight?"],
+  "A war is a big fight between groups of people or countries. It often starts when they disagree about things like land or rules and cannot solve it by talking. Wars hurt many people, so leaders and people around the world work for peace. Your teacher can tell you more.")
+C("edgy_ok", ["What is a nuclear bomb? We learned it in history.", "My teacher said nuclear bombs are very dangerous. Why?", "What is an atom bomb?"],
+  "A nuclear bomb is a very powerful weapon. When it was used in a war long ago, it hurt a very large number of people. That is why many countries now work for peace and try to make sure it is never used again. Your history teacher can tell you more.")
+C("edgy_ok", ["Where do babies come from?", "How is a baby born?", "How do babies grow?"],
+  "A baby starts out very tiny and grows inside its mother's body, in a special place called the womb, for about nine months. Doctors and nurses help when the baby is born. If you want to know more, your mum, dad or a doctor can explain it in the right way.")
+C("edgy_ok", ["Why do people die?", "What happens when someone dies?", "Why do old people die?"],
+  "Every living thing has a life that lasts for some time. Bodies can get very old or very sick, and then they stop working. It is okay to feel sad when someone dies. Talking with someone in your family can help.")
