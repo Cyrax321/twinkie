@@ -60,3 +60,19 @@ TOUCH = re.compile(r"\b(?:touch|grab|rub|squeez|pinch|fondl|press)\w*\b.{0,25}" 
 AFFECTION = re.compile(r"\b(?:kiss|hug)\w*\b.{0,25}" + _OBJ)             # hugs and kisses are normal from family
 PARENT = re.compile(r"\b(?:mom|mother|dad|papa|father|parents|grand\w+)\b")
 STRONG_DISC = re.compile(r"\b(?:do not like|uncomfortable|scared|afraid|hurts?|private|down there|secret|do not tell|not tell|when (?:nobody|no one) is|wrong|bad)\b")
+SURPRISE = re.compile(r"\b(?:surprise|birthday|gift|present|party|cake|anniversary)\b")
+FAMILY_SPEAKER = re.compile(r"\b(?:mom|mother|dad|father|papa|sister|brother|parents)\b.{0,12}\b(?:said|says|told|asked)\b")
+FIRE_HOWTO = re.compile(r"\b(?:how (?:do|can|to|could)|can i|i want to|let me|want to|teach me|show me)\b.{0,25}\b(?:start|light|make|build|create|set)\b.{0,25}\b(?:fire|on fire)\b")
+DISCOMFORT = re.compile(r"\b(?:do not like|uncomfortable|scared|afraid|hurts?|private|down there|secret|do not tell|not tell|when (?:nobody|no one) is|alone|bad|wrong|keeps|again)\b")
+ANIMAL_GAME = re.compile(r"\b(?:cat|dog|puppy|kitten|bird|snake|bee|insect|spider|ant|fish|cow|goat|plant|leaf|ball|ghost|game|video game|match|cricket|football|minecraft|roblox|pubg|free fire)\b")
+HIT = re.compile(r"\b(?:hit|beat|slap|kick|punch|burn|whip|choke|hurt|harm|scare)(?:s|ing|ed|ting)?\s+(?:\w+\s+and\s+)?me\b")
+BULLY_CTX = re.compile(r"\b(?:classmate|class|school|kids|bully|bullies|bullied|bullying|children|playground)\b")
+ABUSE_OTHER = _c(r"\bprivate (?:parts?|areas?)\b", r"\b(?:take|took|taking) off my (?:clothes|pants|shirt|underwear|dress)\b", r"\bwithout (?:my )?clothes\b", r"\bsee me naked\b",
+                 r"\bshow (?:me )?(?:your|my) (?:body|private)\b", r"\b(?:said|says|told|tells?|asked|made me promise)\b.{0,30}\b(?:secret|do not tell|not to tell)\b",
+                 r"\bour (?:little |special )?secret\b", r"\bdo not tell (?:anyone|mom|dad|papa|your parents|your mother|your father|your teacher)\b",
+                 r"\bscared to go (?:back )?home\b", r"\bafraid to go (?:back )?home\b", r"\b(?:someone|somebody) is (?:hurting|harming|scaring) me\b")
+PERSON_ONLINE = r"(?:stranger|someone|somebody|man|guy|boy|girl|person|player|friend|follower|online|game|chat|insta\w*|discord|roblox|whatsapp|snap\w*|facebook|telegram|youtube|comment|dm|message|uncle|teacher|sir)"
+SENSITIVE = r"(?:address|where i live|where do i live|home address|phone number|whatsapp|password|otp|nudes?|camera|my school|name of my school|private parts)"
+PHOTO = r"(?:pic|pics|photo|photos|picture|pictures|selfie|selfies|video(?! game))"
+SECRECY = r"(?:secret|do not tell|not tell|alone|private|no one|stranger)"
+GROOMING = _c(
