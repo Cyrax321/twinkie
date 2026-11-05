@@ -394,3 +394,36 @@ open(f"{RELEASE}/README.md", "w", encoding="utf-8").write(
     + ("Open blockers:\n" + "\n".join(f"- {b}" for b in blockers) + "\n\n" if DRAFT else "") + f"data sha256: {DATA_SHA}\nconfig fingerprint: {FINGERPRINT}\nSee the base model's license for terms.\n")
 hits = []
 for root, _, files in os.walk(RELEASE):
+    for fn in files:
+        p = os.path.join(root, fn)
+        if os.path.getsize(p) < 5_000_000 and not fn.endswith((".safetensors", ".bin", ".gguf")):
+            try:
+                if "unsloth" in open(p, encoding="utf-8", errors="ignore").read().lower(): hits.append(p)
+            except Exception: pass
+print("files still mentioning 'unsloth':", hits or "none")
+!zip -rq {RELEASE}.zip {RELEASE}
+if DRAFT: print("\n*** This is a DRAFT build. Do NOT give it to children until every blocker above is cleared and this cell is re-run. ***")
+
+# %%
+# Cell 11a: libraries for the extended metric suite
+!pip install -q sacrebleu rouge_score nltk bert_score detoxify lm_eval scikit-learn sentence-transformers
+
+# %%
+# Cell 11b: EXTENDED METRICS SUITE. Run after Cell 9 (needs merged model on disk). Every section is wrapped so one missing library does not kill the rest.
+import time, statistics, gc
+import numpy as np
+from transformers import AutoTokenizer, AutoModelForCausalLM
+
+RUN = dict(benchmarks=True, lm=True, overlap=True, semantic=True, heavy_semantic=False, math=True, selfcheck=True,
+           nli_faith=True, toxicity=True, rtp=False, jailbreak=True, pii=True, judge=False, human_sheets=True, efficiency=True, rag=True)
+COMPARE_BASE = True
+BASE_PATH = BASE_OFFICIAL
+LMEVAL_LIMIT = 200
+GPU_COST_PER_HR = 0.35             # PLACEHOLDER: set to your real GPU price, used only for cost per 1M tokens
+CALL_LLM = None                    # optional: fn(text:str)->str that calls a strong judge model
+METRICS = defaultdict(dict)
+def mean(x): x = list(x); return sum(x) / len(x) if x else float("nan")
+def guarded(name):
+    def deco(fn):
+        def w(*a, **k):
+            try: return fn(*a, **k)
