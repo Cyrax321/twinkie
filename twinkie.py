@@ -559,3 +559,36 @@ def faithfulness(context, answer):
     global _nli
     if _nli is None:
         from transformers import pipeline
+        _nli = pipeline("text-classification", model="cross-encoder/nli-deberta-v3-base", device=0, top_k=None)
+    sents = [s_.strip() for s_ in re.split(r"(?<=[.!?])\s+", strip_tags(answer)) if len(s_.split()) >= 3]
+    if not sents: return None
+    ok = 0
+    for s_ in sents:
+        res = _nli({"text": context, "text_pair": s_}, truncation=True); res = res[0] if res and isinstance(res[0], list) else res
+        ok += next(x["score"] for x in res if x["label"].lower().startswith("entail")) >= 0.5
+    return ok / len(sents)
+
+# ---- RAG metrics: uses the SAME retriever and the SAME grounded prompt as training and the pipeline (v2 used a different prompt) ----
+RAG_EVAL = [("Why does the Moon seem to change shape?", ["c3"]), ("What do plants give out during photosynthesis?", ["c2"]), ("Which planet is called the Red Planet?", ["c4"]),
+            ("What is melted rock called inside a volcano?", ["c7"]), ("Why do things fall to the ground?", ["c5"]), ("What happens when two same poles of magnets meet?", ["c6"]),
+            ("How does water get back to the rivers after rain?", ["c1"]), ("Why should I brush my teeth?", ["c8"])]
+RAG_OOC = ["Who is the prime minister of Japan?", "What is the capital of Canada?", "Who painted the Mona Lisa?"]      # not in corpus; none of these are training prompts
+@guarded("rag")
+def rag_metrics(m, k=2):
+    from sentence_transformers import SentenceTransformer
+    ret = S.Retriever(CORPUS, k=k, min_score=0.0); emb = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
+    def ask(q, ids): return m.chat(SYS + [{"role": "user", "content": grounded_user_message(q, " ".join(CORPUS[i] for i in ids))}], max_new_tokens=150)
+    prec, rec, faith, rel = [], [], [], []
+    for q, gold in RAG_EVAL:
+        got = [i for i, _ in ret.search(q)]; ans = ask(q, got)
+        prec.append(sum(i in gold for i in got) / k); rec.append(sum(g in got for g in gold) / len(gold))
+        f = faithfulness(" ".join(CORPUS[i] for i in got), ans) if RUN["nli_faith"] else None
+        if f is not None: faith.append(f)
+        rel.append(float(np.dot(*emb.encode([q, strip_tags(ans)], normalize_embeddings=True))))
+    abst = mean(bool(E.ABSTAIN_RX.search(ask(q, [i for i, _ in ret.search(q)]))) for q in RAG_OOC)
+    return dict(context_precision_at_k=mean(prec), context_recall=mean(rec), answer_relevance=mean(rel), faithfulness=mean(faith), abstention_rate_out_of_corpus=abst, k=k)
+if RUN["rag"]:
+    for nm, m in MODELS.items(): METRICS[nm]["rag"] = rag_metrics(m)
+
+@guarded("toxicity")
+def toxicity_scores(texts):
