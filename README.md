@@ -102,3 +102,29 @@ Authentication is automatically handled by adding your `HF_TOKEN` in Colab's **S
 ## 🧪 Local Testing & Verification
 
 Run the test suite locally without any GPU requirements:
+
+```bash
+python3 test_twinkie.py
+```
+
+Expected output:
+```text
+PASS test_router
+PASS test_training_crisis_prompts_route
+PASS test_output_guard
+PASS test_footers_and_numbers
+PASS test_pipeline
+PASS test_scope_and_rag
+PASS test_dataset_and_eval_are_clean
+PASS test_scorer_matches_trained_answers
+PASS test_release_gate
+PASS test_language_gate
+ALL PASS
+```
+
+---
+
+## 🛡️ License & Ethics
+
+- **Model Weights & Code**: Apache 2.0. Base model weights are governed by the [Qwen License](https://huggingface.co/Qwen/Qwen3.5-2B).
+- **Intended Use**: Educational tutoring for children aged 6 to 12. Must always be deployed behind the multi-layer router and guard system.
