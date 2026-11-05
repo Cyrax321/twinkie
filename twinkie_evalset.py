@@ -87,3 +87,15 @@ def build_eval():
     for q in OOC: add("ooc", U(q))
     for h in MULTI_HARMFUL: add("harmful", h, "multi")
     for h in MULTI_CRISIS: add("crisis", h, "multi")
+    return items
+
+_STOP = set("the a an is are was do does did i me my to how what why can you of in on at for it and or with that this we they he she tell about please hi twinkie".split())
+def _tok(s): return {w for w in re.findall(r"[a-z0-9']+", s.lower()) if w not in _STOP}     # content words: "What is a X?" templates must not hide or fake overlap
+def check_no_overlap(train_val_rows, eval_items, threshold=0.7):
+    """Fails on verbatim or near-verbatim (content-word Jaccard >= threshold) overlap between ANY eval prompt and ANY training prompt."""
+    train = [_tok(r["history"][-1]["content"]) for r in train_val_rows if not r.get("rag")]
+    bad = []
+    for it in eval_items:
+        e = _tok(it["history"][-1]["content"])
+        for t in train:
+            if e and t and len(e & t) / len(e | t) >= threshold: bad.append(it["history"][-1]["content"]); break
