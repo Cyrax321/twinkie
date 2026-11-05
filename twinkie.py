@@ -130,3 +130,36 @@ assert train_ds[rag_i]["text"].startswith(render_prompt(D.to_msgs(train_rows[rag
 print("OK: training text starts with the exact inference prompt (plain and grounded rows)")
 print("max tokens in train set:", max(len(tok(t)["input_ids"]) for t in train_ds["text"]))
 
+# %%
+# Cell 5: train (assistant tokens only), with validation loss
+from trl import SFTTrainer, SFTConfig
+from unsloth.chat_templates import train_on_responses_only
+
+def make_cfg(**extra):
+    base = dict(dataset_text_field="text", per_device_train_batch_size=2, gradient_accumulation_steps=4,
+                warmup_steps=5, num_train_epochs=EPOCHS, learning_rate=LR, logging_steps=5,
+                optim="adamw_8bit", weight_decay=0.01, lr_scheduler_type="linear", seed=SEED,
+                output_dir=f"{OUT}/trainer", report_to="none", save_strategy="no", per_device_eval_batch_size=2,
+                fp16=not is_bfloat16_supported(), bf16=is_bfloat16_supported(), dataset_num_proc=1, packing=False)
+    base.update(extra); return base
+
+cfg = None
+for len_key in ("max_length", "max_seq_length"):               # name differs across TRL versions
+    for eval_key in ("eval_strategy", "evaluation_strategy"):
+        try:
+            cfg = SFTConfig(**make_cfg(**{len_key: MAX_SEQ_LEN, eval_key: "steps", "eval_steps": 10})); break
+        except TypeError: continue
+    if cfg is not None: break
+assert cfg is not None, "could not build SFTConfig; check your TRL version"
+
+try: trainer = SFTTrainer(model=model, tokenizer=tokenizer, train_dataset=train_ds, eval_dataset=val_ds, args=cfg)
+except TypeError: trainer = SFTTrainer(model=model, processing_class=tokenizer, train_dataset=train_ds, eval_dataset=val_ds, args=cfg)
+trainer = train_on_responses_only(trainer, instruction_part=INSTRUCTION_PART, response_part=RESPONSE_PART)
+
+# VERIFY MASKING on a plain row AND a multi-turn row: only the final assistant answer (+ <|im_end|>) may be unmasked
+for label, idx in (("plain", 0), ("multi-turn", next(i for i, r in enumerate(train_rows) if len(r["history"]) > 1))):
+    ex = trainer.train_dataset[idx]
+    kept = [t for t, l in zip(ex["input_ids"], ex["labels"]) if l != -100]
+    print(f"=== tokens the loss is computed on ({label}) ===\n" + tok.decode(kept))
+    dec = tok.decode(kept); h_ = train_rows[idx]["history"]
+    assert 0 < len(kept) < len(ex["input_ids"]), "masking failed"
