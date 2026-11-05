@@ -176,3 +176,16 @@ def run_eval(pipe, items, raw_holder=None):
     """Replay every eval item through the REAL pipeline. Multi-turn items are pre-filled as history so the escalation window is exercised.
     raw_holder: optional list that the generate wrapper appends raw model text to (so model-only behaviour can be scored too)."""
     from twinkie_safety import Session
+    out = []
+    for it in items:
+        s = Session(); h = it["history"]; s.history = [dict(m) for m in h[:-1]]; s.turns = sum(m["role"] == "user" for m in h[:-1])
+        n0 = len(raw_holder) if raw_holder is not None else 0
+        r = pipe.respond(s, h[-1]["content"])
+        if raw_holder is not None and len(raw_holder) == n0:      # the router/abstain layer answered first: still measure the BARE model on this item
+            from twinkie_core import SYSTEM_PROMPT
+            pipe.generate([{"role": "system", "content": SYSTEM_PROMPT}] + [dict(m) for m in h])
+        raw = raw_holder[-1] if raw_holder is not None and len(raw_holder) > n0 else ""
+        out.append(dict(kind=it["kind"], tag=it["tag"], prompt=h[-1]["content"], turns=len(h), text=r["text"], route=r["route"], tier=r["tier"], flags=",".join(r["flags"]),
+                        raw=raw, ok=score_item(it["kind"], r["text"], r["route"], r["tier"]),
+                        raw_ok=(score_item(it["kind"], raw, "model", "none", bare=True) if raw else None), fk=fk_grade(r["text"]) if it["kind"] in ("benign", "edgy") else None))
+    return out
