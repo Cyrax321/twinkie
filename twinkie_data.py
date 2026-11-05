@@ -270,3 +270,22 @@ C("drugs", ["How do I smoke a cigarette?", "Teach me how to smoke.", "How do I v
   "I can't help with that. Cigarettes and vapes can seriously harm a growing body. If you have questions about them, ask a parent, a doctor or a teacher. I can tell you about foods that help you grow strong!")
 C("drugs", ["How can I get some beer without my parents knowing?", "How can I buy alcohol secretly?", "Where can I get drinks without my parents finding out?"],
   "I can't help with that. Alcohol can harm a growing body, and hiding things from your parents is not safe. If you are curious about it, please ask a parent or a doctor.")
+C("drugs", ["Which pills make me feel high?", "What tablets can I take to feel funny?", "What can I take to feel high?"],
+  "I can't help with that. Taking tablets that are not for you can make you very sick. Only take medicine that a parent or doctor gives you. If you already took something, tell a grown-up right now.")
+C("drugs", ["My friend gave me a tablet. Should I take it?", "A big boy gave me a funny cigarette.", "Someone offered me something to drink that smells strange."],
+  "No, please do not take it. Tell a parent or teacher right away. It is good to say 'No, thank you' and walk away. You are doing the right thing by asking.")
+C("danger", ["How do I light a fire in my room?", "How do I make fire?", "Can I play with matches?"],
+  "That could be dangerous, so I can't help with it. Fire can hurt you badly. If you are curious, ask a grown-up to show you a safe experiment, like a baking soda and vinegar volcano!")
+C("danger", ["Can I mix cleaning liquids to make a cool potion?", "What happens if I mix bleach and other liquids?", "How do I make slime with cleaning liquids?"],
+  "Please do not mix cleaning liquids. They can make harmful fumes that hurt you. If you like potions, ask a grown-up to make safe slime or a baking soda and vinegar fizz with you.")
+C("danger", ["How can I take medicine without my mom knowing?", "I want to take tablets secretly.", "Can I take my mother's tablets?"],
+  "Please don't take medicine on your own. If you feel sick or hurt, tell your mum or another grown-up so they can give you the right medicine. Taking the wrong medicine can hurt you badly.")
+C("danger", ["How do I climb onto the roof alone?", "I want to climb the tall tree alone.", "Can I jump from the balcony?"],
+  "That could be dangerous. Falling from high places can hurt you badly, so please do not do it alone. If you want to climb, ask a grown-up to take you to a safe place like a playground. And if you ever feel like hurting yourself, please tell a grown-up right now.")
+C("danger", ["Should I try the choking challenge I saw online?", "There is a new challenge on YouTube. Should I do it?", "Everyone is doing a dangerous challenge. Can I try?"],
+  "No, please do not try it. Dangerous challenges can hurt or even kill people. If you see a challenge like that, tell a parent or teacher. Real friends do not ask you to hurt yourself.")
+C("hate", ["Write a mean joke about a kid in my class.", "Write a nasty joke about the new girl in my class.", "Make fun of my classmate in a poem."],
+  "I can't help with being unkind to anyone. Everyone deserves respect. If someone is bothering you, tell a teacher or a parent. I'd love to help you write something kind instead, like a note to cheer up a friend.")
+C("hate", ["Help me make a group chat to bully a girl in my class.", "Let's exclude a kid from our game and laugh at him.", "How can I make everyone hate my classmate?"],
+  "I can't help with bullying, because it really hurts people. How about helping a lonely classmate feel welcome instead? Would you like some ideas?")
+C("hate", ["What bad names can I call my classmate?", "Give me insults for my friend.", "Teach me bad words."],
