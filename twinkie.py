@@ -691,3 +691,36 @@ if RUN["judge"] and CALL_LLM:
         sc = [j for h in [i["history"] for i in EVAL_ITEMS if i["kind"] in ("benign", "edgy")][:60] if (j := llm_judge(h[-1]["content"], PIPES[nm].respond(S.Session(), h[-1]["content"])["text"]))]
         METRICS[nm]["llm_judge"] = {k_: mean(x[k_] for x in sc) for k_ in ("fluency", "coherence", "helpfulness", "harmlessness", "age_fit")}
 if RUN["human_sheets"]: export_human_sheets()
+
+@guarded("efficiency")
+def efficiency(model_, n=6, new_tokens=128):
+    t, m = model_.t, model_.m
+    prompts = [model_.prompt(SYS + i["history"]) for i in EVAL_ITEMS[:n]]
+    weights_gb = sum(p.numel() * p.element_size() for p in m.parameters()) / 1e9
+    base_mem = torch.cuda.memory_allocated(); torch.cuda.reset_peak_memory_stats(); ttft, tps = [], []
+    for p in prompts:
+        ids = t(p, return_tensors="pt", add_special_tokens=False).to("cuda")
+        torch.cuda.synchronize(); t0 = time.time()
+        with torch.no_grad(): m.generate(**ids, max_new_tokens=1, do_sample=False)
+        torch.cuda.synchronize(); ttft.append(time.time() - t0); t0 = time.time()
+        with torch.no_grad(): out = m.generate(**ids, max_new_tokens=new_tokens, do_sample=False, min_new_tokens=new_tokens)
+        torch.cuda.synchronize(); tps.append((out.shape[1] - ids["input_ids"].shape[1]) / (time.time() - t0))
+    disk = sum(os.path.getsize(os.path.join(r_, f)) for r_, _, fs in os.walk(model_.path) for f in fs) / 1e9 if os.path.isdir(model_.path) else None
+    tp = statistics.median(tps)
+    return dict(time_to_first_token_s=statistics.median(ttft), tokens_per_sec=tp, weights_gb=weights_gb, peak_extra_gb=(torch.cuda.max_memory_allocated() - base_mem) / 1e9,
+                disk_gb=disk, cost_per_1m_tokens_usd=GPU_COST_PER_HR / (tp * 3600) * 1e6, batch_size=1)
+if RUN["efficiency"]:
+    for nm, m in MODELS.items(): METRICS[nm]["efficiency"] = efficiency(m)
+
+def flat(d, p=""):
+    for k, v in d.items():
+        if isinstance(v, dict): yield from flat(v, f"{p}{k}/")
+        else: yield f"{p}{k}", v
+print("\n================ EXTENDED METRICS REPORT ================")
+names = list(METRICS); keys = sorted({k for n_ in names for k, _ in flat(METRICS[n_])})
+print(f"{'metric':58s} " + " ".join(f"{n_:>12s}" for n_ in names))
+for k in keys:
+    vals = {n_: dict(flat(METRICS[n_])).get(k) for n_ in names}
+    print(f"{k:58s} " + " ".join(f"{v:12.4f}" if isinstance(v, (int, float)) else f"{str(v)[:12]:>12s}" for v in vals.values()))
+json.dump({k: dict(v) for k, v in METRICS.items()}, open(f"{OUT}/metrics_report.json", "w"), indent=2, default=str)
+print("\nwrote", f"{OUT}/metrics_report.json", "| with tiny sets treat differences as anecdotes, not proof.")
