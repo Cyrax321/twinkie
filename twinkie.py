@@ -170,6 +170,23 @@ for label, idx in (("plain", 0), ("multi-turn", next(i for i, r in enumerate(tra
 stats = trainer.train(); print(stats.metrics)
 ev = trainer.evaluate(); print("eval:", ev, "| val perplexity:", math.exp(ev["eval_loss"]))   # a big gap vs train loss = overfitting
 
+# Plot and save training & validation loss curves
+try:
+    import matplotlib.pyplot as plt
+    tr_logs = [(x["step"], x["loss"]) for x in trainer.state.log_history if "loss" in x]
+    ev_logs = [(x["step"], x["eval_loss"]) for x in trainer.state.log_history if "eval_loss" in x]
+    if tr_logs:
+        plt.figure(figsize=(8, 4.5))
+        st, ls = zip(*tr_logs); plt.plot(st, ls, label="Training Loss", color="#1f77b4", lw=2)
+        if ev_logs:
+            est, els = zip(*ev_logs); plt.plot(est, els, label="Validation Loss", color="#ff7f0e", marker="o", lw=2)
+        plt.xlabel("Step"); plt.ylabel("Loss"); plt.title("Twinkie-2B Training & Validation Loss Curve")
+        plt.legend(); plt.grid(True, linestyle="--", alpha=0.5); plt.tight_layout()
+        plt.savefig(f"{OUT}/training_curves.png", dpi=160); plt.show()
+        print(f"Plotted and saved loss curves to {OUT}/training_curves.png")
+except Exception as e:
+    print("Plotting skipped:", e)
+
 # %%
 # Cell 6: save everything reproducibly BEFORE switching to inference mode
 import importlib.metadata as md
