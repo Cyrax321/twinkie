@@ -52,3 +52,10 @@ ABSTAIN = ("I do not know that from my school book. A parent or teacher can help
            "Do you want to ask me something else?")
 
 def grounded_user_message(question, context):
+    """The SAME function builds the training prompt and the inference prompt."""
+    return (f"Textbook:\n{context}\n\nQuestion: {question}\n\n"
+            "Use only the textbook text to answer in simple words. If the answer is not in it, say you do not know.")
+
+CORPUS = {   # PLACEHOLDER chunks written for tests. Replace with licensed syllabus text (see twinkie_safety.load_syllabus_dir).
+ "c1": "The water cycle moves water around the Earth. The Sun heats water in oceans and rivers, and it rises as vapour. High in the sky the vapour cools and becomes clouds. Rain or snow falls and flows back to rivers and oceans.",
+ "c2": "Photosynthesis is how plants make food. Leaves use sunlight, water and carbon dioxide to make sugar. Plants give out oxygen during photosynthesis.",
