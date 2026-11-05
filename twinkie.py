@@ -34,6 +34,7 @@ USE_GUARD_MODEL = True                   # Guard model flag
 EXPORT_GGUF  = True                      # Export GGUF flag
 GGUF_QUANTS  = ["q4_k_m", "q8_0"]        # Target GGUF quantizations
 PUSH_TO_HUB  = False                     # Push to Hugging Face toggle
+SAVE_TO_DRIVE = False                    # Save full 15GB weights to Google Drive (disabled by default)
 HF_REPO_NAME = f"YOUR_USERNAME/{MODEL_TAG}" # Target repository name
 try:
     from google.colab import userdata
@@ -249,11 +250,11 @@ json.dump(manifest, open(f"{OUT}/manifest.json", "w"), indent=2, ensure_ascii=Fa
 if os.path.exists("requirements.lock.txt"): shutil.copy("requirements.lock.txt", f"{OUT}/requirements.lock.txt")
 for f in REQUIRED: shutil.copy(f, f"{OUT}/{f}")
 print(json.dumps(manifest["versions"], indent=2))
-try:   # Copy to Google Drive
-    from google.colab import drive; drive.mount("/content/drive")
-    shutil.copytree(OUT, f"/content/drive/MyDrive/{OUT}", dirs_exist_ok=True)
-except Exception as e: print("Drive copy skipped:", e)
-shutil.make_archive(OUT, "zip", OUT)
+if SAVE_TO_DRIVE:
+    try:
+        from google.colab import drive; drive.mount("/content/drive")
+        shutil.copytree(OUT, f"/content/drive/MyDrive/{OUT}", dirs_exist_ok=True)
+    except Exception as e: print("Drive copy skipped:", e)
 
 # %%
 # Inference pipeline setup
@@ -837,5 +838,38 @@ if PUSH_TO_HUB and HF_REPO_NAME and "YOUR_USERNAME" not in HF_REPO_NAME:
             commit_message="Add complete evaluation matrices, datasets, loss curves, and benchmarks"
         )
         print(f"[PASS] All matrices, charts, datasets, and reports uploaded successfully to https://huggingface.co/{HF_REPO_NAME}")
+    except Exception as e:
+        print("Hugging Face comprehensive upload note:", e)
+
+# %%
+# Upload all matrices, evaluations, datasets, plots, and models to Hugging Face
+if PUSH_TO_HUB and HF_REPO_NAME and "YOUR_USERNAME" not in HF_REPO_NAME:
+    print(f"\n=======================================================")
+    print(f"📦 UPLOADING ALL MATRICES, DATASETS & ARTIFACTS TO HUGGING FACE: {HF_REPO_NAME}")
+    print(f"=======================================================\n")
+    try:
+        from huggingface_hub import HfApi, login
+        if HF_TOKEN: login(token=HF_TOKEN)
+        api = HfApi(token=HF_TOKEN)
+        api.create_repo(repo_id=HF_REPO_NAME, repo_type="model", exist_ok=True, token=HF_TOKEN)
+
+        # Upload complete artifacts folder containing:
+        # - eval_outputs.csv (546 evaluated test prompts)
+        # - gate_report.json (Wilson confidence intervals & safety gates)
+        # - metrics_report.json (ARC, HellaSwag, TruthfulQA, MMLU, GSM8K, toxicity, jailbreak)
+        # - comparison.csv (paired comparisons vs base model)
+        # - train.jsonl & val.jsonl (datasets)
+        # - review_sheet.csv (child protection signoff)
+        # - training_curves.png (loss curves)
+        # - comparison_diagram.png (safety comparison chart)
+        # - manifest.json & adapter weights
+        api.upload_folder(
+            folder_path=OUT,
+            repo_id=HF_REPO_NAME,
+            repo_type="model",
+            token=HF_TOKEN,
+            commit_message="Add complete evaluation matrices, datasets, loss curves, and benchmarks"
+        )
+        print(f"✓ All matrices, charts, datasets, and reports uploaded successfully to https://huggingface.co/{HF_REPO_NAME}")
     except Exception as e:
         print("Hugging Face comprehensive upload note:", e)
