@@ -76,3 +76,29 @@ In the first cell:
 !git clone https://github.com/<YOUR_GITHUB_USERNAME>/twinkie.git
 %cd twinkie
 ```
+
+### 3. Run Pipeline
+Execute cells top-to-bottom:
+- **Cell 1**: Installs `unsloth` and locks dependencies.
+- **Cell 2–3**: Preflight checks and offline test execution.
+- **Cell 4–6**: Loads `unsloth/Qwen3.5-2B`, attaches LoRA adapters ($r=16, \alpha=16$), masks non-assistant tokens, and trains for 2 epochs.
+- **Cell 7**: Merges weights, generates GGUFs, and uploads directly to Hugging Face.
+- **Cell 8–10**: Runs automated release gates, multi-turn evaluation, and baseline comparisons.
+
+---
+
+## 📦 Hugging Face Model Export
+
+When training completes, set `PUSH_TO_HUB = True` in Cell 1 to automatically publish:
+
+1. **LoRA Adapter**: `YOUR_USERNAME/twinkie-2b-adapter`
+2. **16-bit Merged Model**: `YOUR_USERNAME/twinkie-2b`
+3. **Quantized GGUFs**: `YOUR_USERNAME/twinkie-2b-gguf` (`q4_k_m`, `q8_0`)
+
+Authentication is automatically handled by adding your `HF_TOKEN` in Colab's **Secrets** panel (key icon).
+
+---
+
+## 🧪 Local Testing & Verification
+
+Run the test suite locally without any GPU requirements:
