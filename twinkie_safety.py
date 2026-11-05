@@ -92,3 +92,18 @@ EMERGENCY = _c(
     r"\bsmoke (?:in|coming from|is coming)\b", r"\bgas (?:is )?leak\w*\b", r"\bsmells? (?:of |like )?gas\b", r"\b(?:took|taken)\b.{0,30}\b(?:too many|a lot of|lots of|all the|whole|entire|bottle of|\d{2,}|ten|twenty)\b.{0,20}\b(?:tablets?|pills?|medicine)\b",
     r"\b(?:on fire|house is burning|room is burning|kitchen is burning)\b", r"\bfire in (?:my|the|our)\b", r"\bcaught fire\b", r"\bsomething is burning\b",
     r"\b(?:not breathing|stopped breathing|can not breathe|hard to breathe|is choking|am choking|are choking|choking on|passed out|fainted|unconscious|not waking up|will not wake up|bleeding a lot|bleeding badly|will not stop bleeding|having a seizure|snake bit\w*|bitten by a snake|snake bite|electric shock|got shocked|is drowning|heart attack)\b")
+DANGER_CHALLENGE = _c(r"\b(?:choking|blackout|fire|passing out|pass out|tide pod|benadryl|skull ?breaker|salt and ice|knockout) challenge\b",
+                      r"\b(?:dangerous|new|viral|youtube|tiktok|reel|insta\w*) challenge\b.{0,40}\b(?:should|can|try|do)\b", r"\b(?:should|can) i (?:try|do) (?:the |this |that )?\w* ?challenge\b.{0,20}\b(?:online|youtube|tiktok)\b")
+ADULT = re.compile(r"\b(?:porn\w*|nudes?|naked (?:pic|photo|picture|video|girl|boy|people|women|men|body|lady|man|woman)\w*|sex(?:ual)? ?(?:video|chat|story|pic|photo|scene)s?|adult (?:video|movie|site|website|content)s?|xxx)\b")
+BULLYING = re.compile(r"\b(?:bully|bullies|bullied|bullying|teas(?:e|es|ed|ing)|make fun of|makes fun of|making fun of|laugh at me|call me names|calls me names|no one plays with me|nobody plays with me)\b")
+PRIVACY = _c(r"\b(?:my (?:full )?name is|i live (?:at|in)|my address is|my phone(?: number)? is|my number is|remember my (?:address|name|number)|save my (?:address|name|number)|my school is)\b",
+             r"\b(?:can|should|shall|may) i (?:send|give|show|tell) you my\b", r"\bi will (?:tell|show|send) you my\b", r"\bsend you my\b", r"\bgive you my (?:number|address|phone)\b",
+             r"\bwant my (?:whatsapp|number|photo)\b", r"\bwhat is your (?:phone|number|address)\b")
+INFO_START = re.compile(r"^(?:what|why|how|who|which)\b")
+
+# romanised (Latin-script) Hindi / Tamil / Malayalam. Language-neutral crisis words and common function words.
+ROMAN_CRISIS = re.compile(r"\b(?:marna|marne|mar jana|mar jaun|mar jau|jeena nahi|jeene ka mann nahi|khudkushi|jaan de|saaga|saga poren|saga (?:venum|vendum)|saaga (?:venum|vendum)|saavu|sagaren|thatkolai|maranam|marikkanam|chaakanam|chavanam|athmahathya|jeevikkan vayya|vendam jeevikkan)\b")
+ROMAN_MARKERS = set("hai nahi mujhe mera meri kya kaise kyun kyu bahut chahiye hoon aap tum hum main mein ko ka ki ke tha thi raha rahi karo abhi bhai didi naan nan enna enakku illa venum vendum epdi nee unga ente enikku njan aanu alla venam undu ningal entha enthu oru illai sollu theriyum puriyala samajh batao bolo".split())
+EN_STOP = set("the a an is are was were i you he she it we they my your me to of and in on at for with that this what why how who when where do does did can will not have has be am so but if or please tell about".split())
+
+def language_gate(text):
