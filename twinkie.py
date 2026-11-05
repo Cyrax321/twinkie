@@ -493,3 +493,36 @@ if RUN["lm"]:
     print("NOTE: perplexity is only comparable between models sharing a tokenizer; use bits_per_char across tokenizers.")
 
 def norm_tokens(s): return re.findall(r"\w+", s.lower())
+def f1_tokens(p, r):
+    pc, rc = Counter(norm_tokens(p)), Counter(norm_tokens(r)); common = sum((pc & rc).values())
+    if common == 0: return 0.0
+    pr_, rr = common / sum(pc.values()), common / sum(rc.values()); return 2 * pr_ * rr / (pr_ + rr)
+def exact_match(p, r): return float(" ".join(norm_tokens(p)) == " ".join(norm_tokens(r)))
+PRED = {}
+@guarded("overlap")
+def overlap_metrics(preds, refs):
+    import sacrebleu, nltk
+    from rouge_score import rouge_scorer
+    from nltk.translate.meteor_score import meteor_score
+    nltk.download("wordnet", quiet=True); nltk.download("omw-1.4", quiet=True)
+    sc = rouge_scorer.RougeScorer(["rouge1", "rouge2", "rougeL"], use_stemmer=True); rs = [sc.score(r, p) for p, r in zip(preds, refs)]
+    return dict(bleu=sacrebleu.corpus_bleu(preds, [refs]).score, rouge1=mean(x["rouge1"].fmeasure for x in rs), rouge2=mean(x["rouge2"].fmeasure for x in rs),
+                rougeL=mean(x["rougeL"].fmeasure for x in rs), meteor=mean(meteor_score([norm_tokens(r)], norm_tokens(p)) for p, r in zip(preds, refs)),
+                exact_match=mean(exact_match(p, r) for p, r in zip(preds, refs)), token_f1=mean(f1_tokens(p, r) for p, r in zip(preds, refs)), n=len(preds))
+refs = [strip_tags(r["answer"]) for r in EN_VAL]
+if RUN["overlap"] or RUN["semantic"]:
+    for nm, m in MODELS.items():
+        PRED[nm] = [strip_tags(m.chat(SYS + r["history"])) for r in EN_VAL]
+        if RUN["overlap"]: METRICS[nm]["overlap"] = overlap_metrics(PRED[nm], refs)
+    print("NOTE: BLEU/ROUGE/METEOR correlate weakly with quality for open-ended answers. Use them only as a sanity signal.")
+
+@guarded("bertscore")
+def bertscore_metric(preds, refs):
+    from bert_score import score as bscore
+    P, R, F = bscore(preds, refs, lang="en", model_type="distilbert-base-uncased", verbose=False)
+    return dict(precision=P.mean().item(), recall=R.mean().item(), f1=F.mean().item())
+if RUN["semantic"]:
+    for nm in MODELS: METRICS[nm]["bertscore"] = bertscore_metric(PRED[nm], refs)
+    # BLEURT / COMET / MoverScore need extra installs (see their READMEs); enable RUN['heavy_semantic'] only after installing them.
+
+QA_SHORT = [("What gas do plants give out?", ["oxygen"]), ("How many planets are in our solar system?", ["eight", "8"]),
