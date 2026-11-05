@@ -327,3 +327,18 @@ class Twinkie:
         return dict(text=text, route=route, flags=list(flags), tier=tier)
 
     def _routed(self, s, r):
+        s.last_route_idx = len(s.history) - 1
+        if r.tier == "hard": s.elevated = True
+        self._event(s, r.name, r.tier)
+        return self._done(s, TEMPLATES[r.name] + footer(r.name), r.name, tier=r.tier)
+
+    def respond(self, s, user_text):
+        s.history.append({"role": "user", "content": user_text}); s.turns += 1
+        ks = load_killswitch(self.kill_path)
+        r = route_text(user_text)
+        if r is None:    # earlier turns of the same disclosure ("he said do not tell" ... "yes it keeps happening")
+            window = [m["content"] for i, m in enumerate(s.history) if m["role"] == "user" and i > s.last_route_idx][-3:]
+            if len(window) > 1:
+                rr = route_text(" . ".join(window))
+                if rr and rr.tier == "hard": r = rr
+        if r: return self._routed(s, r)
