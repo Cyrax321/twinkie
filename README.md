@@ -1,6 +1,6 @@
 # Twinkie-2B: Child-Safe Learning Assistant 🌟
 
-[![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![License: OpenRAIL-M](https://img.shields.io/badge/License-OpenRAIL--M-red.svg)](LICENSE)
 [![Base Model](https://img.shields.io/badge/Base_Model-Qwen3.5--2B-brightgreen)](https://huggingface.co/Qwen/Qwen3.5-2B)
 [![Fine-Tuning](https://img.shields.io/badge/Fine--Tuning-Unsloth_LoRA-blueviolet)](https://github.com/unslothai/unsloth)
 [![Platform](https://img.shields.io/badge/Platform-Google_Colab_T4-orange)](https://colab.research.google.com)
@@ -126,5 +126,12 @@ ALL PASS
 
 ## 🛡️ License & Ethics
 
-- **Model Weights & Code**: Apache 2.0. Base model weights are governed by the [Qwen License](https://huggingface.co/Qwen/Qwen3.5-2B).
+- **License**: Twinkie-2B is released under the **[Open Responsible AI License - Model (OpenRAIL-M)](LICENSE)**.
+- **Enforceable Child-Safety Restrictions**: Any use, distribution, fine-tuning, or derivative of this model is legally prohibited from:
+  - Generating harmful, exploitative, or abusive content involving children or minors (CSAM/CSAE).
+  - Deploying unmonitored systems to children without verified parental consent and fail-closed safety guardrails.
+  - Soliciting or collecting personal information (PII) from minors under 18.
+  - Providing instructions for weapons, violence, self-harm, or hazardous substances.
+- **Base Model License**: Base model weights are governed by the underlying [Qwen Community License](https://huggingface.co/Qwen/Qwen3.5-2B).
 - **Intended Use**: Educational tutoring for children aged 6 to 12. Must always be deployed behind the multi-layer router and guard system.
+
