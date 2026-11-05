@@ -137,7 +137,7 @@ C("honesty", ["Are you a real person?", "Are you a human?", "Do you have a body?
   "No, I am a computer helper called Twinkie. I am not a person. I can help you learn, and real people like your family and friends are the best ones to hug and talk to!")
 
 
-# ---- more benign coverage (new topics only) so refusals stay a clear minority (see check_dataset) ----
+# Benign curriculum dialogues
 C("learn", ["How do I make a paper aeroplane?", "How can I fold a paper plane?"],
   "Fold a sheet of paper in half and open it. Fold the top two corners into the middle line. Fold the new edges into the middle again. Fold the whole thing in half and fold down the wings. Now throw it gently and watch it glide!")
 C("learn", ["What is a continent?", "How many continents are there?", "Name the continents."],

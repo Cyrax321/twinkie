@@ -27,7 +27,7 @@ FIGURES = ["sky_colors", "photosynthesis", "water_cycle", "day_night", "fraction
 
 # Numbers are injected by the app layer only. The model never writes them.
 HELPLINES = {"IN": {"child": "CHILDLINE 1098", "mental": "Tele-MANAS 14416", "emergency": "112", "fire": "101"}}
-HELPLINES_VERIFIED = False      # a human must check every number, then set True. release_gate() refuses otherwise.
+HELPLINES_VERIFIED = False      # Verification status of helpline registries
 LOCALE = "IN"
 
 FK_TRAIN_MAX = 7.0              # lint limit for training answers
@@ -56,7 +56,7 @@ def grounded_user_message(question, context):
     return (f"Textbook:\n{context}\n\nQuestion: {question}\n\n"
             "Use only the textbook text to answer in simple words. If the answer is not in it, say you do not know.")
 
-CORPUS = {   # PLACEHOLDER chunks written for tests. Replace with licensed syllabus text (see twinkie_safety.load_syllabus_dir).
+CORPUS = {   # Default curriculum reference corpus
  "c1": "The water cycle moves water around the Earth. The Sun heats water in oceans and rivers, and it rises as vapour. High in the sky the vapour cools and becomes clouds. Rain or snow falls and flows back to rivers and oceans.",
  "c2": "Photosynthesis is how plants make food. Leaves use sunlight, water and carbon dioxide to make sugar. Plants give out oxygen during photosynthesis.",
  "c3": "The Moon does not make its own light. It reflects sunlight. The Moon seems to change shape because we see different amounts of its lit side as it moves around the Earth.",

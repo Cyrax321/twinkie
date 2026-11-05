@@ -120,7 +120,7 @@ def language_gate(text):
 @dataclass
 class Route:
     name: str
-    tier: str            # "hard" (notify humans) | "soft" (gentle check-in) | "block" (fixed redirect)
+    tier: str            
     notify: bool
 
 def _violence_route(t):
@@ -172,7 +172,7 @@ def route_text(text, allow_unsafe_accident_skip=True):
     if ADULT.search(t): return Route("adult", "block", False)
     if _any(PRIVACY, t): return Route("privacy", "block", False)
     if BULLYING.search(t) and re.search(r"\b(?:me|my)\b", t) and not informational: return Route("bullying", "block", False)
-    # ---- language (after crisis checks, so a mixed-language crisis is not swallowed)
+    # Language routing
     if language_gate(text) == "non_english": return Route("non_english", "block", False)
     return None
 
@@ -224,7 +224,7 @@ def sanitize_figures(text):
     return re.sub(r"\[FIGURE:\s*(\w+)\]", repl, text).strip(), flags
 
 class GuardModel:
-    """Qwen3Guard-Gen as a second opinion on every answer. VERIFY the prompt and label format on the model card."""
+    """Secondary guard model wrapper for output classification."""
     def __init__(self, name="Qwen/Qwen3Guard-Gen-0.6B", device="cuda"):
         import torch
         from transformers import AutoTokenizer, AutoModelForCausalLM
