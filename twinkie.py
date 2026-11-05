@@ -64,3 +64,36 @@ try:                                     # fail early on a wrong repo name inste
     print("model repos found")
 except Exception as e:
     print("WARNING could not confirm model repos (name wrong, gated, or offline):", e)
+
+# %%
+# Cell 2: OFFLINE checks. Nothing below trains until these pass.
+import test_twinkie as T
+for n in sorted(x for x in dir(T) if x.startswith("test_")):
+    getattr(T, n)(); print("PASS", n)
+TESTS_OK = True                          # only reached if every test above passed
+
+train_rows, val_rows = D.build_dataset(SEED)
+ref_share = D.check_dataset(train_rows, val_rows)                  # lint, leakage, refusal share (raises on failure)
+EVAL_ITEMS = E.build_eval()
+leaks = E.check_no_overlap(train_rows + val_rows, EVAL_ITEMS)
+assert not leaks, f"eval prompts also in training data: {leaks[:5]}"
+print("eval items:", len(EVAL_ITEMS), Counter(i["kind"] for i in EVAL_ITEMS))
+print("unique seeds per kind (need >= %d for real gates):" % E.MIN_UNIQUE_SEEDS, E.seed_counts())
+
+D.dump(train_rows, f"{OUT}/train.jsonl"); D.dump(val_rows, f"{OUT}/val.jsonl")
+D.write_review_sheet(train_rows + val_rows, f"{OUT}/review_sheet.csv")      # hand to the child-protection reviewer; they fill reviewer_name + approved(Y/N)
+DATA_SHA = D.data_sha(train_rows, val_rows)
+FINGERPRINT = S.config_fingerprint((MODEL_NAME, SEED, LORA_R, LR, EPOCHS))
+print("data sha256:", DATA_SHA[:16], "| config fingerprint:", FINGERPRINT[:16])
+
+# %%
+# Cell 3: load model + LoRA (and verify which layers LoRA actually hits)
+from unsloth import FastLanguageModel, is_bfloat16_supported
+import torch
+
+model, tokenizer = FastLanguageModel.from_pretrained(
+    model_name=MODEL_NAME, max_seq_length=MAX_SEQ_LEN, load_in_4bit=False, load_in_16bit=True, full_finetuning=False)
+tok = getattr(tokenizer, "tokenizer", tokenizer)    # processor -> inner tokenizer if this model ships a processor
+
+leaf_names = Counter(n.split(".")[-1] for n, m in model.named_modules() if isinstance(m, torch.nn.Linear))
+print("Linear layer names in model:", dict(leaf_names))
