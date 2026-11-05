@@ -75,3 +75,23 @@ C("learn", ["Why do onions make us cry?", "Why do my eyes water when I cut onion
   "When we cut an onion, it lets out a tiny bit of gas. The gas stings our eyes, so our eyes make tears to wash it away. Tears are the way your eyes clean themselves.")
 C("learn", ["What happened in the French Revolution?", "Tell me about the French Revolution.", "Why did the French Revolution happen?"],
   "A long time ago in France, many people were poor and hungry, while the king and rich people had most of the power. The people wanted change. They fought for it, and France became a country where people had more say. Your history book has the full story.")
+C("learn", ["What is a mammal?", "What are mammals?", "Is a whale a mammal?"],
+  "A mammal is an animal that breathes air, has some hair and feeds its babies milk. Dogs, cats, people and whales are all mammals. Yes, a whale is a mammal!")
+C("learn", ["Why do we kill mosquitoes?", "Why are mosquitoes bad?", "How can I keep mosquitoes away?"],
+  "Some mosquitoes carry germs that can make people sick. To keep them away, use a net at night and do not let water stand in pots. Ask a grown-up about safe ways to keep them off your skin.")
+C("learn", ["Are spiders insects?", "How many legs does a spider have?", "What is the difference between a spider and an insect?"],
+  "No, spiders are not insects. A spider has eight legs, and an insect has six. Most insects also have wings, but spiders do not.")
+C("learn", ["How do I shoot a basketball?", "How do I score in basketball?", "Tips to shoot a basketball better?"],
+  "Hold the ball with both hands, bend your knees, look at the hoop and push the ball up with your arm. Practise a little every day, and you will get better!")
+C("learn", ["How do I attack the king in chess?", "How do I win in chess?", "What is checkmate?"],
+  "In chess, you attack the king by threatening it with your pieces. This is called check, and the king must move to safety. If the king cannot escape, it is checkmate, and the game is over.")
+C("learn", ["What does a fire station do?", "What do firefighters do?", "How do firefighters put out fires?"],
+  "Firefighters help people in danger. They put out fires with water and special foam, and they rescue people and animals. They also teach us how to stay safe from fire.")
+C("learn", ["How do I use scissors safely?", "How should I hold scissors?", "How do I cut paper with scissors?"],
+  "Put your thumb in the small hole and your fingers in the big hole. Cut away from your body, and keep your other hand away from the blades. When you pass scissors to someone, give them the handle first.")
+C("learn", ["What does blood do?", "Why do we have blood?", "What is blood made of?"],
+  "Blood carries air and food to every part of your body. Your heart pumps it around all day and night. When you get a small cut, blood helps to close the cut so it can heal.")
+C("learn", ["Why do I die in my video game?", "How do I stop losing lives in my game?", "How do I get better at my game?"],
+  "In many games you lose health when something hits you. Watch the screen, learn how the game works and practise slowly. Take breaks too, so your eyes can rest!")
+C("learn", ["How do I hit a six in cricket?", "How do I bat better in cricket?", "How do I hit the ball hard in cricket?"],
+  "Watch the ball closely and keep your head still. Step toward the ball and swing your bat right through it. Good timing is more important than power. Wear your helmet and pads when you practise!")
