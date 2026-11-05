@@ -217,3 +217,19 @@ INSTRUCTIONY = re.compile(rf"(?:\bstep\s*\d|\bfirst,? (?:mix|take|get|buy|light|
 def sanitize_figures(text):
     flags, seen = [], set()
     def repl(m):
+        tag = m.group(1)
+        if tag not in FIGURES: flags.append("unknown_figure"); return ""
+        if tag in seen: return ""
+        seen.add(tag); return m.group(0)
+    return re.sub(r"\[FIGURE:\s*(\w+)\]", repl, text).strip(), flags
+
+class GuardModel:
+    """Qwen3Guard-Gen as a second opinion on every answer. VERIFY the prompt and label format on the model card."""
+    def __init__(self, name="Qwen/Qwen3Guard-Gen-0.6B", device="cuda"):
+        import torch
+        from transformers import AutoTokenizer, AutoModelForCausalLM
+        self.t = AutoTokenizer.from_pretrained(name); self.device = device
+        try: m = AutoModelForCausalLM.from_pretrained(name, dtype=torch.float16)
+        except TypeError: m = AutoModelForCausalLM.from_pretrained(name, torch_dtype=torch.float16)     # older transformers
+        self.m = m.to(device).eval()
+    def unsafe(self, user, answer):
