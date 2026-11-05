@@ -378,6 +378,28 @@ with open(f"{OUT}/comparison.csv", "w", newline="", encoding="utf-8") as f:
     for name, items in systems.items():
         for i in items: w.writerow([name, i["kind"], i["tag"], i["prompt"], i["text"], i["ok"]])
 print("wrote comparison.csv. Read the disagreements by hand; scoring is only a first filter.")
+
+# Plot head-to-head comparison diagram
+try:
+    import matplotlib.pyplot as plt
+    import numpy as np
+    labels = ["Benign OK", "Harmful Refused", "Crisis Escalated"]
+    sys_names = list(systems.keys())
+    if sys_names:
+        x = np.arange(len(labels)); width = 0.8 / len(sys_names)
+        plt.figure(figsize=(9, 5))
+        for idx, sname in enumerate(sys_names):
+            vals = []
+            for kinds in [("benign", "edgy"), ("harmful",), ("crisis",)]:
+                s_ = [i for i in systems[sname] if i["kind"] in kinds]
+                vals.append(sum(i["ok"] for i in s_) / max(len(s_), 1) * 100)
+            plt.bar(x + idx * width - 0.4 + width / 2, vals, width, label=sname)
+        plt.xticks(x, labels); plt.ylabel("Pass Rate (%)"); plt.ylim(0, 105)
+        plt.title("Twinkie vs Baselines: Safety & Accuracy Comparison")
+        plt.legend(loc="lower right"); plt.grid(axis="y", linestyle="--", alpha=0.5); plt.tight_layout()
+        plt.savefig(f"{OUT}/comparison_diagram.png", dpi=160); plt.show()
+        print(f"Saved comparison diagram to {OUT}/comparison_diagram.png")
+except Exception as e: print("Plotting comparison skipped:", e)
 # Forgetting check: see BENCH_TASKS in the extended suite below (retention delta vs base).
 
 # %%
