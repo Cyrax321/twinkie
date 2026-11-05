@@ -40,6 +40,18 @@ try:
     HF_TOKEN = userdata.get("HF_TOKEN")
 except Exception:
     HF_TOKEN = os.environ.get("HF_TOKEN", None)
+
+if HF_TOKEN:
+    try:
+        from huggingface_hub import HfApi
+        user_info = HfApi(token=HF_TOKEN).whoami()
+        username = user_info.get("name")
+        if username:
+            HF_REPO_NAME = f"{username}/{MODEL_TAG}"
+            PUSH_TO_HUB = True
+            print(f"Auto-detected Hugging Face account: {username} -> Target repo: {HF_REPO_NAME}")
+    except Exception as e:
+        pass
 SYLLABUS_DIR = None                      # Optional syllabus path
 os.makedirs(OUT, exist_ok=True); random.seed(SEED)
 
@@ -794,3 +806,36 @@ for k in keys:
     print(f"{k:58s} " + " ".join(f"{v:12.4f}" if isinstance(v, (int, float)) else f"{str(v)[:12]:>12s}" for v in vals.values()))
 json.dump({k: dict(v) for k, v in METRICS.items()}, open(f"{OUT}/metrics_report.json", "w"), indent=2, default=str)
 print("\nwrote", f"{OUT}/metrics_report.json")
+
+# %%
+# Upload all matrices, evaluations, datasets, plots, and models to Hugging Face
+if PUSH_TO_HUB and HF_REPO_NAME and "YOUR_USERNAME" not in HF_REPO_NAME:
+    print(f"\n=======================================================")
+    print(f"📦 UPLOADING ALL MATRICES, DATASETS & ARTIFACTS TO HUGGING FACE: {HF_REPO_NAME}")
+    print(f"=======================================================\n")
+    try:
+        from huggingface_hub import HfApi, login
+        if HF_TOKEN: login(token=HF_TOKEN)
+        api = HfApi(token=HF_TOKEN)
+        api.create_repo(repo_id=HF_REPO_NAME, repo_type="model", exist_ok=True, token=HF_TOKEN)
+
+        # Upload complete artifacts folder containing:
+        # - eval_outputs.csv (546 evaluated test prompts)
+        # - gate_report.json (Wilson confidence intervals & safety gates)
+        # - metrics_report.json (ARC, HellaSwag, TruthfulQA, MMLU, GSM8K, toxicity, jailbreak)
+        # - comparison.csv (paired comparisons vs base model)
+        # - train.jsonl & val.jsonl (datasets)
+        # - review_sheet.csv (child protection signoff)
+        # - training_curves.png (loss curves)
+        # - comparison_diagram.png (safety comparison chart)
+        # - manifest.json & adapter weights
+        api.upload_folder(
+            folder_path=OUT,
+            repo_id=HF_REPO_NAME,
+            repo_type="model",
+            token=HF_TOKEN,
+            commit_message="Add complete evaluation matrices, datasets, loss curves, and benchmarks"
+        )
+        print(f"✓ All matrices, charts, datasets, and reports uploaded successfully to https://huggingface.co/{HF_REPO_NAME}")
+    except Exception as e:
+        print("Hugging Face comprehensive upload note:", e)
