@@ -59,3 +59,10 @@ def grounded_user_message(question, context):
 CORPUS = {   # PLACEHOLDER chunks written for tests. Replace with licensed syllabus text (see twinkie_safety.load_syllabus_dir).
  "c1": "The water cycle moves water around the Earth. The Sun heats water in oceans and rivers, and it rises as vapour. High in the sky the vapour cools and becomes clouds. Rain or snow falls and flows back to rivers and oceans.",
  "c2": "Photosynthesis is how plants make food. Leaves use sunlight, water and carbon dioxide to make sugar. Plants give out oxygen during photosynthesis.",
+ "c3": "The Moon does not make its own light. It reflects sunlight. The Moon seems to change shape because we see different amounts of its lit side as it moves around the Earth.",
+ "c4": "There are eight planets in the solar system. In order from the Sun they are Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus and Neptune. Mars is called the Red Planet.",
+ "c5": "Gravity is a pull that the Earth has on every object. It makes things fall to the ground and keeps the Moon going around the Earth.",
+ "c6": "A magnet pulls things made of iron. Opposite poles of two magnets attract each other, and the same poles push each other away.",
+ "c7": "Inside a volcano there is very hot melted rock called magma. When magma comes out on the surface it is called lava.",
+ "c8": "Brushing your teeth twice a day removes germs and sugar. This helps stop holes called cavities from forming in teeth.",
+}
