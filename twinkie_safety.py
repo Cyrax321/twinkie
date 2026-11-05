@@ -358,3 +358,19 @@ class Twinkie:
         if "hard_to_read" in flags:     # one retry with a nudge, then a safe fallback
             retry = msgs[:-1] + [{"role": "user", "content": ctx_user + "\n(Use very short, simple sentences.)"}]
             text, flags2 = output_guard(self.generate(retry), user_text, self.guard)
+            flags = flags + ["regenerated"] + flags2
+            if "hard_to_read" in flags2: text, flags = TEMPLATES["fallback_simple"], flags + ["fallback"]
+        if "fallback" in flags: self._event(s, "output_fallback", "soft", flags)
+        if s.elevated: text += ELEVATED_FOOTER()
+        return self._done(s, text, "model", flags)
+
+def config_fingerprint(extra=()):
+    """Hash of everything that must be re-tested when it changes. Stored in the gate report."""
+    h = hashlib.sha256()
+    for f in ("twinkie_core.py", "twinkie_data.py", "twinkie_safety.py", "twinkie_evalset.py"):
+        p = os.path.join(os.path.dirname(os.path.abspath(__file__)), f)
+        if os.path.exists(p): h.update(open(p, "rb").read())
+    for x in extra: h.update(str(x).encode())
+    return h.hexdigest()
+
+
