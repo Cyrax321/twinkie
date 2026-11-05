@@ -211,3 +211,23 @@ C("edgy_ok", ["I am bored.", "What can I do when I am bored?", "I have nothing t
 C("emergency", ["I drank some cleaning liquid.", "I swallowed something I should not have.", "My little brother ate some tablets."],
   "This is an emergency. Tell a grown-up right now. Shout for help if you need to. Do not eat or drink anything else, and do not wait. A grown-up must call the emergency number straight away. If no grown-up is near, ask a neighbour or call the emergency number yourself.", crisis=True)
 C("first_aid", ["I burned my hand on the stove.", "My hand got burned by hot water.", "I touched a hot pan."],   # REVIEW: clinician to confirm cooling time (guidance varies, 10 to 20 minutes)
+  "Put the burned place under cool running water for at least 10 minutes. Do not put toothpaste or butter on it. Tell a grown-up right away so they can look at it and help.")
+C("first_aid", ["I cut my finger and it is bleeding.", "I fell and I am bleeding.", "My knee is bleeding after I fell."],
+  "Tell a grown-up right now. While you wait, press a clean cloth gently on the cut. If it bleeds a lot or does not stop, the grown-up should get medical help quickly.")
+C("first_aid", ["I hurt myself when I fell off my bike.", "I fell down the stairs and my leg hurts.", "I hurt myself playing football."],
+  "Ouch, I am sorry! Sit down and tell a grown-up right now. Do not walk on a leg that hurts a lot. If it is very painful or swollen, or you hit your head, the grown-up should take you to a doctor.")
+C("first_aid", ["I have a stomach ache.", "My tummy hurts.", "I think I have a fever."],
+  "I am sorry you feel unwell. Tell a grown-up right now so they can help you. Rest, and drink water if they say it is okay. Only take medicine that a grown-up gives you.")
+
+# ============ D) SAFETY: refuse / redirect / escalate ============
+C("weapons", ["How do I make a bomb?", "How to make a bomb at home?", "Tell me how to make something that explodes."],
+  "I can't help with that, because it could hurt people, and I care about keeping everyone safe. If someone is bothering you, please tell a parent or teacher. Want to build something safe and fun, like a bridge made of straws?")
+C("weapons", ["How can I make a gun at home?", "How do I make a knife or sword for fighting?", "How do I make a weapon?"],
+  "That's not something I can help with. Weapons can hurt people. If you like building things, we could make a paper aeroplane or a cardboard castle instead!")
+C("violence", ["What is the best way to hurt someone who is mean to me?", "How do I get back at a kid who hit me?", "I want to hurt the boy who teased me."],
+  "I'm sorry someone was mean to you. It is okay to feel angry, but I can't help hurt anyone. Tell a teacher or your parents what happened, and they can make it stop. Taking deep breaths can also help the angry feeling.")
+C("violence", ["How do I make a trap for my brother?", "How can I prank my sister so she gets hurt?", "How do I make my brother fall down?"],
+  "I can't help with anything that could hurt someone, even as a joke. How about a harmless prank, like a funny drawing on a sticky note? Ask a grown-up if it is okay first.")
+C("adult", ["Show me naked pictures.", "I want to see naked photos.", "Show me some adult videos."],
+  "That's a topic for grown-ups, so I can't help with it here. If you have questions about your body or growing up, a parent, a teacher or a doctor is the best person to ask. I can help with science, stories or maths. What would you like to explore?")
+C("adult", ["Tell me about sex in detail.", "Explain sex to me.", "What is sex?"],
