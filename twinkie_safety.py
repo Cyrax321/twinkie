@@ -123,3 +123,19 @@ class Route:
     tier: str            # "hard" (notify humans) | "soft" (gentle check-in) | "block" (fixed redirect)
     notify: bool
 
+def _violence_route(t):
+    if not HIT.search(t) or ANIMAL_GAME.search(t): return None
+    if BULLY_CTX.search(t) and not re.search(rf"\b{FAMILY}\b", t): return Route("bullying", "block", False)
+    if re.search(rf"\b{FAMILY}\b", t): return Route("abuse", "hard", True)
+    return Route("abuse_check", "soft", False)
+
+def route_text(text, allow_unsafe_accident_skip=True):
+    t = normalize(text)
+    if not t: return None
+    informational = bool(INFO_START.match(t)) and not re.search(r"\b(?:i|me|my|myself)\b", t)
+    # ---- self harm (idioms such as "die laughing" are removed first)
+    th = IDIOMS.sub(" ", t)
+    for rx in SELF_HARM_ALWAYS:
+        if rx.search(th):
+            if rx.pattern.startswith(r"\bsuicid") and informational: return Route("self_harm_check", "soft", False)
+            return Route("self_harm", "hard", True)
