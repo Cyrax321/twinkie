@@ -280,3 +280,18 @@ class EventLog:
     """Minimal logging (DPDP): category, tier, time, session id. Text is stored only if log_text=True (off by default)."""
     def __init__(self, path="events.jsonl", log_text=False): self.path, self.log_text = path, log_text
     def __call__(self, ev):
+        if not self.log_text: ev = {k: v for k, v in ev.items() if k != "text"}
+        with open(self.path, "a", encoding="utf-8") as f: f.write(json.dumps(ev, ensure_ascii=False) + "\n")
+
+class Retriever:
+    def __init__(self, chunks, k=2, min_score=0.12):
+        from sklearn.feature_extraction.text import TfidfVectorizer
+        self.ids, self.k, self.min_score, self.chunks = list(chunks), k, min_score, chunks
+        self.vec = TfidfVectorizer(stop_words="english").fit([chunks[i] for i in self.ids])
+        self.M = self.vec.transform([chunks[i] for i in self.ids])
+    def search(self, q):
+        sims = (self.vec.transform([q]) @ self.M.T).toarray()[0]
+        order = sims.argsort()[::-1][:self.k]
+        return [(self.ids[j], float(sims[j])) for j in order]
+
+def load_syllabus_dir(path, max_words=120):
