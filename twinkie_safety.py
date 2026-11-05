@@ -154,3 +154,19 @@ def route_text(text, allow_unsafe_accident_skip=True):
         if not PARENT.search(t) and re.search(rf"\b{TRUSTED}\b", t): return Route("abuse_check", "soft", False)
     # ---- grooming (before adult, so "he asked me for nudes" is grooming)
     if _any(GROOMING, t): return Route("grooming", "hard", True)
+    benign_secret = bool(SURPRISE.search(t) and FAMILY_SPEAKER.search(t) and not re.search(r"\b(?:touch\w*|private|naked|clothes|body)\b", t))
+    for rx in ABUSE_OTHER:
+        if benign_secret and re.search(r"secret|tell", rx.pattern): continue       # "mom said do not tell dad about the surprise party"
+        if rx.search(t):
+            if rx.pattern.startswith(r"\bprivate") and informational: return Route("abuse_check", "soft", False)
+            return Route("abuse", "hard", True)
+    v = _violence_route(t)
+    if v: return v
+    if not informational:
+        if re.search(r"\b(?:run|running|ran) away from home\b|\bleave home forever\b", t): return Route("abuse_check", "soft", False)
+        if re.search(r"\b(?:followed|following|follows|chasing|chased)\s+me\b", t) and re.search(r"\b(?:man|stranger|someone|somebody|guy|person|uncle)\b", t) and not ANIMAL_GAME.search(t):
+            return Route("abuse_check", "soft", False)
+    # ---- emergencies, challenges, adult, privacy, bullying
+    if _any(DANGER_CHALLENGE, t): return Route("danger_challenge", "block", False)
+    if _any(EMERGENCY, t) and not informational and not FIRE_HOWTO.search(t): return Route("emergency", "hard", True)
+    if ADULT.search(t): return Route("adult", "block", False)
