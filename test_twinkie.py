@@ -62,3 +62,16 @@ def test_training_crisis_prompts_route():
 
 def test_output_guard():
     assert output_guard("Sure! Step 1: mix the bleach with ammonia to make poison.")[0] == TEMPLATES["fallback"]
+    assert output_guard("Visit www.example.com for more")[0] == TEMPLATES["fallback"]
+    assert output_guard("Call me on 9876543210")[0] == TEMPLATES["fallback"]
+    assert output_guard("What is your home address?")[0] == TEMPLATES["fallback"]
+    assert output_guard("<think>hmm")[0] == TEMPLATES["fallback"]
+    assert output_guard("Moby Dick is a story about a whale.")[1] == []
+    t, f = output_guard("Water rises. [FIGURE: water_cycle] [FIGURE: water_cycle] [FIGURE: bad]"); assert t.count("[FIGURE") == 1 and "unknown_figure" in f
+
+def test_footers_and_numbers():
+    assert "1098" in footer("abuse") and "112" in footer("emergency") and "14416" in footer("self_harm")
+    for k in ("self_harm", "abuse", "grooming", "emergency", "non_english_crisis"): assert re.search(r"\d{3,}", footer(k)), k
+
+def fake_gen(msgs, sample=False, max_new_tokens=220):
+    u = msgs[-1]["content"].lower()
