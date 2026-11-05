@@ -295,3 +295,19 @@ class Retriever:
         return [(self.ids[j], float(sims[j])) for j in order]
 
 def load_syllabus_dir(path, max_words=120):
+    """Load licensed syllabus text (one .txt per chapter). Chunks by paragraph. Put ONLY text you have a licence for here."""
+    chunks = {}
+    for fn in sorted(os.listdir(path)):
+        if not fn.endswith(".txt"): continue
+        for i, para in enumerate(p.strip() for p in open(os.path.join(path, fn), encoding="utf-8").read().split("\n\n") if len(p.split()) >= 8):
+            chunks[f"{fn}#{i}"] = " ".join(para.split()[:max_words])
+    return chunks
+
+_FACT_Q = re.compile(r"^(?:what|why|how|who|when|where|which|explain|tell me about|define|name|describe)\b", re.I)
+_NO_GROUND = re.compile(r"(?:\bstory\b|\bpoem\b|\briddle\b|\bjoke\b|\bhomework\b|\bhelp me\b|\bplus\b|\bminus\b|\btimes\b|\bdivided\b|\d\s*[\+\-x\*/÷]\s*\d|\bspell\b|\bi (?:am|feel)\b|\bhi\b|\bhello\b|\bthank|\bbye\b|\bgame\b)", re.I)
+def needs_grounding(text): return bool(_FACT_Q.match(text.strip())) and not _NO_GROUND.search(text)
+
+# =====================================================================  the pipeline
+class Twinkie:
+    """generate(messages, sample=False, max_new_tokens=220) -> str. scope_mode: 'syllabus_only' (production) or 'open' (dev, model eval)."""
+    def __init__(self, generate, guard=None, retriever=None, scope_mode="syllabus_only", kill_path="killswitch.json",
