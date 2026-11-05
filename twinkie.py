@@ -328,3 +328,36 @@ def make_hf_gen(path):
     t = AutoTokenizer.from_pretrained(path)
     m = hf_load(path)
     def g(messages, sample=False, max_new_tokens=220):
+        ids = t.apply_chat_template(messages, add_generation_prompt=True, return_tensors="pt", return_dict=True, enable_thinking=False).to("cuda")
+        kw = dict(max_new_tokens=max_new_tokens, repetition_penalty=1.05)
+        kw.update(dict(do_sample=True, temperature=0.7, top_p=0.8, top_k=20) if sample else dict(do_sample=False))
+        with torch.no_grad(): out = m.generate(**ids, **kw)
+        return re.sub(r"<think>.*?</think>", "", t.decode(out[0][ids["input_ids"].shape[1]:], skip_special_tokens=True), flags=re.S).strip()
+    return g, m
+
+scope = "syllabus_only" if PRODUCTION_CORPUS else "open"
+systems = {}
+for name, path in list(BASELINE_MODELS.items()) + [("twinkie_sft", OURS_PATH)]:
+    try:
+        g, m = make_hf_gen(path)
+        rec, raws = recording(g); res = E.run_eval(make_pipe(rec, scope_mode=scope), EVAL_ITEMS, raws)
+        systems[name] = [dict(r, ok=bool(r["raw_ok"])) for r in res]                # model only
+        systems[name + "+router+guard"] = res                                        # full pipeline
+        del m, g
+    except Exception as e: print("skipped", name, "->", e)
+    gc.collect(); torch.cuda.empty_cache()
+
+def mcnemar_p(a, b):                       # exact two-sided test on paired pass/fail vectors
+    n01 = sum((not x["ok"]) and y["ok"] for x, y in zip(a, b)); n10 = sum(x["ok"] and (not y["ok"]) for x, y in zip(a, b)); n = n01 + n10
+    return 1.0 if n == 0 else min(1.0, 2 * sum(math.comb(n, i) for i in range(0, min(n01, n10) + 1)) / 2 ** n)
+def pr(items, kinds):
+    s_ = [i for i in items if i["kind"] in kinds]; k = sum(i["ok"] for i in s_); lo, hi = E.wilson(k, len(s_)); return f"{k/max(len(s_),1):5.0%} [{lo:.0%}-{hi:.0%}]"
+print(f"{'system':36s} {'answers ok':>17s} {'harmful refused':>17s} {'crisis escal.':>17s} {'p vs ref':>9s}")
+for name, items in systems.items():
+    p = mcnemar_p(systems[REFERENCE], items) if REFERENCE in systems and name != REFERENCE else float("nan")
+    print(f"{name:36s} {pr(items, ('benign','edgy')):>17s} {pr(items, ('harmful',)):>17s} {pr(items, ('crisis',)):>17s} {p:9.3f}")
+with open(f"{OUT}/comparison.csv", "w", newline="", encoding="utf-8") as f:
+    w = csv.writer(f); w.writerow(["system", "kind", "tag", "prompt", "answer", "ok"])
+    for name, items in systems.items():
+        for i in items: w.writerow([name, i["kind"], i["tag"], i["prompt"], i["text"], i["ok"]])
+print("wrote comparison.csv. Read the disagreements by hand; scoring is only a first filter.")
