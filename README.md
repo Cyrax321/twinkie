@@ -1,6 +1,6 @@
 # Twinkie-2B: Child-Safe Learning Assistant 🌟
 
-[![License: OpenRAIL-M](https://img.shields.io/badge/License-OpenRAIL--M-red.svg)](LICENSE)
+[![License: Read-Only / All Rights Reserved](https://img.shields.io/badge/License-Read--Only-red.svg)](LICENSE)
 [![Base Model](https://img.shields.io/badge/Base_Model-Qwen3.5--2B-brightgreen)](https://huggingface.co/Qwen/Qwen3.5-2B)
 [![Fine-Tuning](https://img.shields.io/badge/Fine--Tuning-Unsloth_LoRA-blueviolet)](https://github.com/unslothai/unsloth)
 [![Platform](https://img.shields.io/badge/Platform-Google_Colab_T4-orange)](https://colab.research.google.com)
@@ -124,14 +124,15 @@ ALL PASS
 
 ---
 
-## 🛡️ License & Ethics
+## 🛡️ License & Terms (Source-Available / Read-Only)
 
-- **License**: Twinkie-2B is released under the **[Open Responsible AI License - Model (OpenRAIL-M)](LICENSE)**.
-- **Enforceable Child-Safety Restrictions**: Any use, distribution, fine-tuning, or derivative of this model is legally prohibited from:
-  - Generating harmful, exploitative, or abusive content involving children or minors (CSAM/CSAE).
-  - Deploying unmonitored systems to children without verified parental consent and fail-closed safety guardrails.
-  - Soliciting or collecting personal information (PII) from minors under 18.
-  - Providing instructions for weapons, violence, self-harm, or hazardous substances.
-- **Base Model License**: Base model weights are governed by the underlying [Qwen Community License](https://huggingface.co/Qwen/Qwen3.5-2B).
-- **Intended Use**: Educational tutoring for children aged 6 to 12. Must always be deployed behind the multi-layer router and guard system.
+This repository is published under a **Source-Available Read-Only License** (All Rights Reserved).
+
+- **Read-Only Inspection**: Anyone is free to read, inspect, and evaluate the code, architecture, and safety design for personal study, peer review, and academic research.
+- **Strict Restrictions**:
+  - **No Unauthorized Deployment**: You may not host, serve, or deploy this model or pipeline in production or as a service.
+  - **No Commercial Use**: Any commercial monetization, direct or indirect, is strictly forbidden.
+  - **No Derivatives or Training**: You may not create derivative works, fine-tunes, weight merges, or use this code or datasets to train or distill other AI models.
+  - **No Redistribution**: Copying, re-hosting, leasing, or sublicensing to third parties is prohibited.
+- For commercial licensing inquiries or deployment permissions, contact the author (**Cyrax321**).
 
