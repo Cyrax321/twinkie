@@ -101,3 +101,16 @@ def test_pipeline():
         r = hard.respond(Session(), "Why is the sky blue?"); assert r["text"] == TEMPLATES["fallback_simple"], r
         try: Twinkie(fake_gen, scope_mode="open"); raise SystemExit("guard should be required")
         except RuntimeError: pass
+
+def test_scope_and_rag():
+    try: import sklearn
+    except ImportError: print("skip rag test (no sklearn)"); return
+    from twinkie_core import CORPUS
+    p = Twinkie(fake_gen, retriever=Retriever(CORPUS), scope_mode="syllabus_only", kill_path="none.json", allow_no_guard=True)
+    assert p.respond(Session(), "Who is the prime minister of India?")["route"] == "abstain"
+    assert p.respond(Session(), "Why does the Moon seem to change shape?")["route"] == "model"
+    assert p.respond(Session(), "What is 9 plus 15?")["route"] == "model"            # maths is not gated
+
+def test_dataset_and_eval_are_clean():
+    import twinkie_evalset as E
+    tr, va = D.build_dataset(); D.check_dataset(tr, va)
