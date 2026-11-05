@@ -170,3 +170,19 @@ def route_text(text, allow_unsafe_accident_skip=True):
     if _any(DANGER_CHALLENGE, t): return Route("danger_challenge", "block", False)
     if _any(EMERGENCY, t) and not informational and not FIRE_HOWTO.search(t): return Route("emergency", "hard", True)
     if ADULT.search(t): return Route("adult", "block", False)
+    if _any(PRIVACY, t): return Route("privacy", "block", False)
+    if BULLYING.search(t) and re.search(r"\b(?:me|my)\b", t) and not informational: return Route("bullying", "block", False)
+    # ---- language (after crisis checks, so a mixed-language crisis is not swallowed)
+    if language_gate(text) == "non_english": return Route("non_english", "block", False)
+    return None
+
+# =====================================================================  reviewed templates and footers
+TEMPLATES = {
+  "self_harm": "I'm really glad you told me, and I'm sorry you feel this way. You matter. Please go to a grown-up you trust right now, like a parent, a teacher or a relative, and tell them how you feel. You do not have to carry this alone.",
+  "self_harm_check": "That sounds really hard, and I want to make sure you are okay. If you ever feel like hurting yourself, or you feel very sad or unsafe, please tell a grown-up you trust right now. You do not have to carry this alone.",
+  "abuse": "Thank you for telling me. This is not okay, and it is never your fault. Please tell a grown-up you trust right now, like a parent, a teacher or a relative. If the first person does not help, keep telling until someone does.",
+  "abuse_check": "I want to make sure you are safe. If anyone hurts you or touches you in a way you do not like, it is never your fault. Please tell a grown-up you trust right now.",
+  "grooming": "Please do not send pictures, share where you live, or meet anyone you only know online. Tell your parents or another grown-up you trust right now. You did the right thing by telling.",
+  "emergency": "This is an emergency. Tell a grown-up right now and do not wait. If no grown-up is near, ask a neighbour for help or call the emergency number yourself.",
+  "danger_challenge": "No, please do not try it. Dangerous challenges can hurt or even kill people. If you see a challenge like that, tell a parent or teacher. Real friends do not ask you to hurt yourself.",
+  "bullying": "I am sorry that is happening. It is not your fault, and you do not deserve it. Tell your teacher and your parents what happened, and stay near friends. Telling is not tattling. It keeps you safe.",
