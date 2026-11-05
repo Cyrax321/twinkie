@@ -460,3 +460,36 @@ class HFModel:
         self.path = path; self.t = AutoTokenizer.from_pretrained(path)
         self.m = hf_load(path)
     def prompt(self, msgs): return self.t.apply_chat_template(msgs, tokenize=False, add_generation_prompt=True, enable_thinking=False)
+    def chat(self, msgs, sample=False, max_new_tokens=220):
+        ids = self.t(self.prompt(msgs), return_tensors="pt", add_special_tokens=False).to("cuda")
+        kw = dict(max_new_tokens=max_new_tokens, repetition_penalty=1.05)
+        kw.update(dict(do_sample=True, temperature=0.7, top_p=0.8, top_k=20) if sample else dict(do_sample=False))
+        with torch.no_grad(): out = self.m.generate(**ids, **kw)
+        return re.sub(r"<think>.*?</think>", "", self.t.decode(out[0][ids["input_ids"].shape[1]:], skip_special_tokens=True), flags=re.S).strip()
+    @torch.no_grad()
+    def nll(self, msgs, answer):
+        p = self.t(self.prompt(msgs), add_special_tokens=False)["input_ids"]
+        a = self.t(answer + "<|im_end|>", add_special_tokens=False)["input_ids"]          # same end token as training (v2 used eos_token, which can differ)
+        ids = torch.tensor([p + a], device="cuda"); labels = ids.clone(); labels[0, :len(p)] = -100
+        return self.m(input_ids=ids, labels=labels).loss.item() * len(a), len(a)
+
+gc.collect(); torch.cuda.empty_cache()
+MODELS = {"twinkie": HFModel(OURS_PATH)}
+if COMPARE_BASE: MODELS["base"] = HFModel(BASE_PATH)
+SYS = [{"role": "system", "content": SYSTEM_PROMPT}]
+PIPES = {nm: make_pipe(m.chat, scope_mode=scope) for nm, m in MODELS.items()}
+EN_VAL = [r for r in val_rows if r["lang"] == "en" and not r["rag"] and r["cat"] in ("learn", "edgy_ok", "homework", "honesty")]
+strip_tags = core.strip_figures
+HISTS = lambda kind: [i["history"] for i in EVAL_ITEMS if i["kind"] == kind]
+
+@guarded("lm")
+def lm_metrics(m, rows):
+    nll = ntok = nch = 0
+    for r in rows:
+        l, n = m.nll(D.sys_msgs("full") + r["history"], r["answer"]); nll += l; ntok += n; nch += len(r["answer"])
+    return dict(cross_entropy_nats_per_token=nll / ntok, perplexity=math.exp(nll / ntok), bits_per_char=nll / (math.log(2) * nch), answer_tokens=ntok)
+if RUN["lm"]:
+    for nm, m in MODELS.items(): METRICS[nm]["lm"] = lm_metrics(m, val_rows)
+    print("NOTE: perplexity is only comparable between models sharing a tokenizer; use bits_per_char across tokenizers.")
+
+def norm_tokens(s): return re.findall(r"\w+", s.lower())
