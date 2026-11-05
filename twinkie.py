@@ -307,7 +307,7 @@ def chat_with_twinkie(pipe=pipe_demo, interactive=True):
             print(f"Child:   {q}")
             print(f"Twinkie: {ans['text']}\n")
 
-chat_with_twinkie(pipe_demo)
+chat_with_twinkie(pipe_demo, interactive=False)
 
 # %%
 # Evaluation suite
