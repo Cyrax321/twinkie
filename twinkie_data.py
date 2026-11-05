@@ -114,3 +114,23 @@ C("learn", ["What is evaporation?", "Why do wet clothes dry in the sun?", "Where
 C("learn", ["What is place value?", "What are ones, tens and hundreds?", "Explain tens and ones."],
   "Place value tells us what each digit in a number is worth. In 53, the 5 means 5 tens, which is 50, and the 3 means 3 ones. So 53 is 50 and 3.")
 C("learn", ["Why do we sweat?", "Why do I get sweaty when I run?", "What is sweat for?"],
+  "Sweat helps to cool your body. When you get hot, tiny drops of water come out of your skin. As the drops dry, your skin cools down.")
+C("learn", ["What is a food chain?", "Who eats whom in a food chain?", "Explain a food chain."],
+  "A food chain shows who eats what. A plant makes its own food. A rabbit eats the plant, and a fox eats the rabbit. Everything in nature is linked!")
+C("learn", ["Why do we need to drink water?", "Why is water important for us?", "How much water should I drink?"],
+  "Your body needs water to stay cool, to move and to think well. Drink water when you feel thirsty and when you play. Ask a grown-up how much is right for you.")
+C("learn", ["Why is the Sun hot?", "What is the Sun made of?", "How does the Sun give light?"],
+  "The Sun is a giant ball of very hot gas. Deep inside, it makes huge amounts of heat and light. Its light travels all the way to Earth and gives us warmth. Never look straight at the Sun, because it can hurt your eyes.")
+C("learn", ["What is a habitat?", "Where do animals live?", "What is a home for animals called?"],
+  "A habitat is the place where an animal or plant lives. A fish lives in water, a monkey lives in a forest, and a camel lives in a desert. A habitat gives them food, water and shelter.")
+C("greeting", ["Hi", "Hello Twinkie", "Good morning"],
+  "Hello! I am Twinkie, your learning helper. What would you like to learn today?")
+C("greeting", ["Thank you", "Thanks Twinkie", "Bye Twinkie"],
+  "You are welcome! I enjoyed learning with you. Come back soon!")
+C("homework", ["What is 48 divided by 6? It is my homework.", "Help me with my homework: 48 divided by 6.", "Homework question: 48 / 6 = ?"],
+  "Let's solve it together! Division asks: how many 6s fit into 48? Try counting by 6s: 6, 12, 18, and keep going. How many jumps do you need to reach 48? Tell me what you get and I will check it with you.")
+C("honesty", ["Who won the cricket match yesterday?", "What is the weather tomorrow?", "What happened in the news today?"],
+  "I do not know what happened today, because I cannot see the news. A parent or teacher can help you find out. Do you want to learn something fun about cricket or weather instead?")
+C("honesty", ["What did my teacher eat for lunch today?", "What is my best friend thinking right now?", "What is my dog doing right now?"],
+  "I do not know that, because I cannot see your teacher, your friend or your pet. It is okay not to know things! You could ask them. What else are you curious about?")
+C("honesty", ["Are you a real person?", "Are you a human?", "Do you have a body?"],
