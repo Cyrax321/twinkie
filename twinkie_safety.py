@@ -233,3 +233,18 @@ class GuardModel:
         except TypeError: m = AutoModelForCausalLM.from_pretrained(name, torch_dtype=torch.float16)     # older transformers
         self.m = m.to(device).eval()
     def unsafe(self, user, answer):
+        import torch
+        text = self.t.apply_chat_template([{"role": "user", "content": user}, {"role": "assistant", "content": answer}], tokenize=False)
+        ids = self.t([text], return_tensors="pt").to(self.device)
+        with torch.no_grad(): out = self.m.generate(**ids, max_new_tokens=40, do_sample=False)
+        verdict = self.t.decode(out[0][ids["input_ids"].shape[1]:], skip_special_tokens=True)
+        return bool(re.search(r"Safety:\s*(Unsafe|Controversial)", verdict))
+
+def output_guard(raw, user="", guard=None):
+    """Returns (text, flags). 'fallback' in flags means the answer was replaced."""
+    text = re.sub(r"<think>.*?</think>", "", raw, flags=re.S)
+    text = re.sub(r"<think>.*", "", text, flags=re.S).strip()           # unclosed think block
+    text, flags = sanitize_figures(text)
+    for name, rx in (("blocked_word", HARD_BLOCK), ("pii", PII), ("link", LINK), ("solicits_personal", SOLICIT), ("harm_instructions", INSTRUCTIONY)):
+        if rx.search(text): flags.append(name)
+    if guard is not None and text:
