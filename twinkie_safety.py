@@ -374,3 +374,19 @@ def config_fingerprint(extra=()):
     return h.hexdigest()
 
 
+def release_gate(signoff_bad=None, gate_report=None, tests_ok=None, enforce=True):
+    """Everything that must be true before real children use this. Returns a list of blockers; raises if enforce and any exist.
+    signoff_bad : ids returned by twinkie_data.require_signoff (None = review sheet never checked)
+    gate_report : dict returned by twinkie_evalset.evaluate_gates (None = eval never run)
+    tests_ok    : True only if test_twinkie.py passed on THIS fingerprint"""
+    b = []
+    if not _core.HELPLINES_VERIFIED: b.append("helpline numbers are not human-verified (twinkie_core.HELPLINES_VERIFIED is False)")
+    if signoff_bad is None: b.append("review sheet sign-off was not checked")
+    elif signoff_bad: b.append(f"{len(signoff_bad)} safety rows lack a named reviewer approval")
+    if gate_report is None: b.append("held-out eval gates were not run")
+    else:
+        if not gate_report.get("seeds_ok"): b.append("eval set has fewer than 100 unique seeds in some kind: " + str(gate_report.get("seed_shortfall")))
+        b += [f"gate failed: {g}" for g in gate_report.get("failed", [])]
+    if not tests_ok: b.append("offline tests did not pass")
+    if b and enforce: raise RuntimeError("RELEASE BLOCKED:\n - " + "\n - ".join(b))
+    return b
