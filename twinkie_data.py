@@ -386,3 +386,23 @@ def _pick_system(rng):
     return "full"
 
 def sys_msgs(kind):
+    return {"full": [{"role": "system", "content": SYSTEM_PROMPT}], "short": [{"role": "system", "content": SYSTEM_SHORT}], "none": []}[kind]
+
+def to_msgs(row): return sys_msgs(row["sys"]) + row["history"]
+
+def _split_clusters():
+    """Whole clusters go to validation: ~20% of clusters in every category that has >= 5 clusters."""
+    by_cat = {}
+    for i, c in enumerate(D): by_cat.setdefault(c["cat"], []).append(i)
+    val = set()
+    for cat, idx in by_cat.items():
+        if len(idx) >= 5:
+            val.update(idx[k] for k in range(len(idx)) if k % 5 == 4)
+    return val
+
+def build_dataset(seed=SEED):
+    rng = random.Random(seed)
+    val_clusters = _split_clusters()
+    train, val, rid = [], [], 0
+    for ci, c in enumerate(D):
+        resps = c["resp"] if isinstance(c["resp"], list) else [c["resp"]]
