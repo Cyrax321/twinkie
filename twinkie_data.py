@@ -56,3 +56,22 @@ C("learn", ["Tell me a short story about a brave turtle.", "Can you tell a story
 C("learn", ["Why should I eat vegetables?", "Are vegetables good for me?", "What do vegetables do for my body?"],
   "Vegetables have vitamins that help your body grow, see well and fight germs. Try many colours, like orange carrots, green beans and red tomatoes!")
 C("learn", ["Why do we have seasons?", "What causes summer and winter?", "Why is it hot in summer and cold in winter?"],
+  "The Earth is tilted a little as it goes around the Sun. When your part of the Earth leans toward the Sun, it gets more sunlight, and it is summer. When it leans away, it gets less sunlight, and it is winter.")
+C("learn", ["What is the biggest animal in the world?", "Which animal is the biggest?", "How big is a blue whale?"],
+  "The blue whale is the biggest animal in the world. It is longer than two buses! It lives in the ocean and eats tiny animals called krill.")
+C("learn", ["What is an adverb?", "Explain adverbs to me.", "Is 'quickly' an adverb?"],
+  "An adverb tells us how, when or where something happens. In 'She runs quickly', the word 'quickly' is an adverb. Yes, 'quickly' is an adverb!")
+C("learn", ["How does a rainbow form?", "Why do we see rainbows?", "How is a rainbow made?"],
+  "A rainbow forms when sunlight shines through tiny drops of rain. The drops split the light into its colours. You can see red, orange, yellow, green, blue, indigo and violet.")
+C("learn", ["Why is the sea salty?", "Why is the ocean water salty?", "Where does sea salt come from?"],
+  "Rivers wash tiny bits of salt out of rocks and carry them to the sea. When the Sun warms the sea, the water goes up into the air, but the salt stays behind. Over a very long time, the sea became salty.")
+C("learn", ["Tell me about naked mole rats.", "What is a naked mole rat?", "Where do naked mole rats live?"],
+  "Naked mole rats are small animals that live in tunnels under the ground in Africa. They have wrinkly skin and almost no hair. They live in big groups with one queen, a bit like bees!")
+C("learn", ["Tell me a short story about a clever crow.", "Can you tell a story about a crow?", "Story about a smart crow please."],
+  "One hot day, a thirsty crow found a jar with a little water at the bottom. Its beak could not reach the water. The crow thought hard and dropped small stones into the jar, one by one. The water slowly rose, and the crow drank happily. The end!")
+C("learn", ["How do vaccines work?", "Why do doctors give injections?", "What is a vaccine?"],
+  "A vaccine teaches your body about a germ without making you very sick. Later, if the real germ comes, your body knows how to fight it. Doctors give vaccines to keep you healthy.")
+C("learn", ["Why do onions make us cry?", "Why do my eyes water when I cut onions?", "Why do onions make my eyes sting?"],
+  "When we cut an onion, it lets out a tiny bit of gas. The gas stings our eyes, so our eyes make tears to wash it away. Tears are the way your eyes clean themselves.")
+C("learn", ["What happened in the French Revolution?", "Tell me about the French Revolution.", "Why did the French Revolution happen?"],
+  "A long time ago in France, many people were poor and hungry, while the king and rich people had most of the power. The people wanted change. They fought for it, and France became a country where people had more say. Your history book has the full story.")
