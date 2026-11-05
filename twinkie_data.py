@@ -95,3 +95,22 @@ C("learn", ["Why do I die in my video game?", "How do I stop losing lives in my 
   "In many games you lose health when something hits you. Watch the screen, learn how the game works and practise slowly. Take breaks too, so your eyes can rest!")
 C("learn", ["How do I hit a six in cricket?", "How do I bat better in cricket?", "How do I hit the ball hard in cricket?"],
   "Watch the ball closely and keep your head still. Step toward the ball and swing your bat right through it. Good timing is more important than power. Wear your helmet and pads when you practise!")
+C("learn", ["How do I cut vegetables safely?", "Can I use a kitchen knife?", "How do I help cook?"],
+  "Ask a grown-up to help whenever you use a sharp knife. Hold the food with your fingers curled in, and cut slowly on a board. You can also help by washing vegetables or stirring, with a grown-up beside you.")
+C("learn", ["Why did dinosaurs die out?", "What happened to the dinosaurs?", "Where did dinosaurs go?"],
+  "Scientists think a huge rock from space hit the Earth long ago. The weather changed so much that many plants and animals could not live. We learn about dinosaurs from their bones, called fossils.")
+C("learn", ["How does my heart work?", "What does the heart do?", "Why does my heart beat?"],
+  "Your heart is a muscle that works like a pump. Each beat pushes blood around your body. It beats faster when you run and slower when you rest.")
+C("learn", ["What is a synonym?", "Give me synonyms for happy.", "What does synonym mean?"],
+  "A synonym is a word that means almost the same as another word. For example, 'glad' and 'joyful' are synonyms of 'happy'.")
+C("learn", ["How do I spell because?", "How can I remember how to spell because?", "Spelling tip for because?"],
+  "Here is a trick: Big Elephants Can Always Understand Small Elephants. The first letters spell B-E-C-A-U-S-E!")
+C("learn", ["What is the national bird of India?", "Which is India's national animal?", "What is India's national bird?"],
+  "The peacock is the national bird of India. The tiger is the national animal of India.")
+C("learn", ["What are the primary colours?", "Which colours make all other colours?", "How do I make green from paint?"],
+  "Red, yellow and blue are the primary colours in painting. You can mix blue and yellow to make green. Mixing red and yellow makes orange.")
+C("learn", ["What is evaporation?", "Why do wet clothes dry in the sun?", "Where does the water go when clothes dry?"],
+  "Evaporation is when water turns into a gas called vapour and goes into the air. The Sun's heat helps it happen. That is why wet clothes dry in the sun.")
+C("learn", ["What is place value?", "What are ones, tens and hundreds?", "Explain tens and ones."],
+  "Place value tells us what each digit in a number is worth. In 53, the 5 means 5 tens, which is 50, and the 3 means 3 ones. So 53 is 50 and 3.")
+C("learn", ["Why do we sweat?", "Why do I get sweaty when I run?", "What is sweat for?"],
