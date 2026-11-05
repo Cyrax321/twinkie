@@ -163,3 +163,36 @@ for label, idx in (("plain", 0), ("multi-turn", next(i for i, r in enumerate(tra
     print(f"=== tokens the loss is computed on ({label}) ===\n" + tok.decode(kept))
     dec = tok.decode(kept); h_ = train_rows[idx]["history"]
     assert 0 < len(kept) < len(ex["input_ids"]), "masking failed"
+    assert dec.strip().startswith(train_rows[idx]["answer"][:20]), "loss window does not start at the answer"
+    for m_ in h_:   # earlier assistant turns are CONTEXT: they must not be trained on
+        if m_["role"] == "assistant": assert m_["content"][:25] not in dec, "an earlier assistant turn is inside the loss window"
+
+stats = trainer.train(); print(stats.metrics)
+ev = trainer.evaluate(); print("eval:", ev, "| val perplexity:", math.exp(ev["eval_loss"]))   # a big gap vs train loss = overfitting
+
+# %%
+# Cell 6: save everything reproducibly BEFORE switching to inference mode
+import importlib.metadata as md
+model.save_pretrained(f"{OUT}/adapter"); tok.save_pretrained(f"{OUT}/adapter")
+try: model.save_pretrained_merged(f"{OUT}/merged_16bit", tokenizer, save_method="merged_16bit")
+except Exception as e: print("merged save failed (check unsloth version):", e)
+if EXPORT_GGUF:
+    for q in GGUF_QUANTS:
+        try: model.save_pretrained_gguf(f"{OUT}/gguf_{q}", tokenizer, quantization_method=q)
+        except Exception as e: print(f"GGUF {q} local save note:", e)
+
+# Push to Hugging Face Hub (LoRA Adapter, Merged 16-bit, and GGUF variants)
+if PUSH_TO_HUB and HF_REPO_NAME and "YOUR_USERNAME" not in HF_REPO_NAME:
+    print(f"Uploading model variants to Hugging Face: {HF_REPO_NAME}")
+    try:
+        from huggingface_hub import login
+        if HF_TOKEN: login(token=HF_TOKEN)
+    except Exception as e: print("HF login note:", e)
+
+    # 1. Push LoRA adapter
+    try:
+        model.push_to_hub(f"{HF_REPO_NAME}-adapter", token=HF_TOKEN)
+        tok.push_to_hub(f"{HF_REPO_NAME}-adapter", token=HF_TOKEN)
+        print("Pushed LoRA adapter to Hub.")
+    except Exception as e: print("Adapter push failed:", e)
+
