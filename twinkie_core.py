@@ -38,3 +38,10 @@ def _syll(w):
     if w.endswith("e") and n > 1: n -= 1
     return max(n, 1)
 
+def strip_figures(t):
+    return re.sub(r"\[FIGURE:[^\]]*\]", "", t).strip()
+
+def fk_grade(text):
+    text = strip_figures(text)
+    sents = max(1, len(re.findall(r"[.!?]+", text)))
+    words = re.findall(r"[A-Za-z']+", text)
