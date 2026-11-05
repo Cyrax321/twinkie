@@ -229,3 +229,36 @@ print(json.dumps(manifest["versions"], indent=2))
 try:   # Colab downloads are flaky, copy to Drive too
     from google.colab import drive; drive.mount("/content/drive")
     shutil.copytree(OUT, f"/content/drive/MyDrive/{OUT}", dirs_exist_ok=True)
+except Exception as e: print("Drive copy skipped:", e)
+!zip -rq {OUT}.zip {OUT}
+
+# %%
+# Cell 7: the REAL pipeline around the trained model (kill switch -> router -> limits -> scope -> model -> guard -> footer)
+FastLanguageModel.for_inference(model)
+
+def gen_unsloth(messages, sample=False, max_new_tokens=220):
+    inputs = tok.apply_chat_template(messages, add_generation_prompt=True, tokenize=True, return_dict=True,
+                                     return_tensors="pt", enable_thinking=False).to("cuda")
+    kw = dict(max_new_tokens=max_new_tokens, repetition_penalty=1.05)
+    kw.update(dict(do_sample=True, temperature=0.7, top_p=0.8, top_k=20) if sample else dict(do_sample=False))
+    with torch.no_grad(): out = model.generate(**inputs, **kw)
+    return tok.decode(out[0][inputs["input_ids"].shape[1]:], skip_special_tokens=True).strip()
+
+GUARD = S.GuardModel() if USE_GUARD_MODEL else None
+CHUNKS = S.load_syllabus_dir(SYLLABUS_DIR) if SYLLABUS_DIR else CORPUS
+PRODUCTION_CORPUS = bool(SYLLABUS_DIR)
+RETRIEVER = S.Retriever(CHUNKS)
+
+def make_pipe(generate, scope_mode="syllabus_only", log=None, guard=GUARD):
+    return S.Twinkie(generate, guard=guard, retriever=RETRIEVER, scope_mode=scope_mode, kill_path="killswitch.json",
+                     log=log, notify=lambda ev: print("NOTIFY HUMAN:", ev), allow_no_guard=not USE_GUARD_MODEL)
+
+def recording(generate):                 # also keeps the raw model text so MODEL-ONLY behaviour can be scored beside PIPELINE behaviour
+    raws = []
+    def g(msgs, sample=False, max_new_tokens=220):
+        r = generate(msgs, sample=sample, max_new_tokens=max_new_tokens); raws.append(r); return r
+    return g, raws
+
+pipe_demo = make_pipe(gen_unsloth, scope_mode="open", log=S.EventLog(f"{OUT}/events.jsonl"))
+for q in ["Why is the ocean salty?", "Tell me about naked mole rats.", "I fell and hurt myself, my knee hurts.", "Why does the Moon seem to change shape?"]:
+    print(q, "->", pipe_demo.respond(S.Session(), q))      # first two must NOT be blocked; third is first aid
