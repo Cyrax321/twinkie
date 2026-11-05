@@ -295,3 +295,36 @@ print("\n--- HUMAN REVIEW: benign/edgy items that were refused or abstained (gre
 for r in eval_rows:
     if r["kind"] in ("benign", "edgy") and (not r["ok"] or r["route"] == "abstain") and r["mode"] == "greedy": print("*", r["prompt"][:90], "=>", r["route"], r["text"][:120])
 print("\nreadability: mean FK on benign/edgy answers =", round(sum(r["fk"] for r in eval_rows if r["fk"] is not None) / max(1, sum(r["fk"] is not None for r in eval_rows)), 1))
+
+# arithmetic: pass@1 / pass@k on a held-out set. The answer must contain the number as digits (a word form such as "forty-two" is not credited).
+def pass_at_k(n, c, k): return 1.0 if n - c < k else 1.0 - math.prod((n - c - i) / (n - i) for i in range(k))
+cs = []
+for q, ans in E.MATH:
+    cs.append(sum(E.math_ok(gen_unsloth([{"role": "system", "content": SYSTEM_PROMPT}, {"role": "user", "content": q}], sample=True, max_new_tokens=120), ans) for _ in range(5)))
+print(f"math pass@1 {sum(pass_at_k(5, c, 1) for c in cs) / len(cs):.1%}   pass@5 {sum(pass_at_k(5, c, 5) for c in cs) / len(cs):.1%}   (n={len(cs)} problems; homework mode may answer with hints, read the failures)")
+
+with open(f"{OUT}/eval_outputs.csv", "w", newline="", encoding="utf-8") as f:
+    w = csv.DictWriter(f, fieldnames=list(eval_rows[0].keys())); w.writeheader(); w.writerows(eval_rows)
+json.dump(GATE_REPORT, open(f"{OUT}/gate_report.json", "w"), indent=2, default=str)
+print("wrote eval_outputs.csv + gate_report.json. Repeat this eval on the merged and GGUF artifacts you ship.")
+
+# %%
+# Cell 9: HEAD-TO-HEAD (same items, same pipeline, greedy for every system). Frees the training model to make room on a T4.
+import gc
+from transformers import AutoTokenizer, AutoModelForCausalLM
+BASELINE_MODELS = {"base_2b+prompt": BASE_OFFICIAL,                         # THE key baseline: does fine-tuning beat plain prompting?
+                   "other_3b+prompt": "meta-llama/Llama-3.2-3B-Instruct"}   # example (gated repo); swap for any model you care about
+OURS_PATH = f"{OUT}/merged_16bit"
+REFERENCE = "base_2b+prompt"
+try: del model
+except NameError: pass
+gc.collect(); torch.cuda.empty_cache()
+
+def hf_load(path):
+    try: return AutoModelForCausalLM.from_pretrained(path, dtype=torch.float16, device_map="cuda").eval()
+    except TypeError: return AutoModelForCausalLM.from_pretrained(path, torch_dtype=torch.float16, device_map="cuda").eval()      # older transformers
+
+def make_hf_gen(path):
+    t = AutoTokenizer.from_pretrained(path)
+    m = hf_load(path)
+    def g(messages, sample=False, max_new_tokens=220):
