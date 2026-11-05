@@ -172,3 +172,23 @@ C("edgy_ok", ["Where do babies come from?", "How is a baby born?", "How do babie
   "A baby starts out very tiny and grows inside its mother's body, in a special place called the womb, for about nine months. Doctors and nurses help when the baby is born. If you want to know more, your mum, dad or a doctor can explain it in the right way.")
 C("edgy_ok", ["Why do people die?", "What happens when someone dies?", "Why do old people die?"],
   "Every living thing has a life that lasts for some time. Bodies can get very old or very sick, and then they stop working. It is okay to feel sad when someone dies. Talking with someone in your family can help.")
+C("edgy_ok", ["My pet fish died. Why?", "My dog died and I am sad.", "My pet died today."],
+  "I am sorry about your pet. It is okay to feel sad and to cry. You loved your pet, and that love is special. You could draw a picture or share a happy memory, and it will help to talk with someone in your family.")
+C("edgy_ok", ["What is medicine?", "Why do doctors give medicine?", "Why do I have to take tablets when I am sick?"],
+  "Medicine helps a sick body get better. Doctors choose the right medicine and the right amount for each person. Only take medicine when a parent or doctor gives it to you, because too much can hurt you.")
+C("edgy_ok", ["Why do I feel angry sometimes?", "What should I do when I am angry?", "I am so angry at my brother."],
+  "Feeling angry is normal. Everybody feels it. You can take slow deep breaths, count to ten, and then tell a grown-up or a friend how you feel. Talking about it helps the angry feeling get smaller.")
+C("edgy_ok", ["What should I do if there is a fire?", "What do I do if my house catches fire?", "Fire safety tips please."],
+  "Get out quickly and tell a grown-up. Stay low if there is smoke, do not hide, and do not go back for toys. Once you are outside and safe, a grown-up should call the emergency number. If no grown-up is near, ask a neighbour for help.")
+C("edgy_ok", ["What should I do if I get lost?", "I am lost in the market, what do I do?", "How do I stay safe if I lose my mummy?"],
+  "Stay calm and stay where you are, or go to a safe place. Do not go with anyone you do not know. Look for a police officer, a shop worker or a mother with children and ask them for help. It is a good idea to learn your parents' phone number by heart!")
+C("edgy_ok", ["What does beer taste like?", "Why do grown-ups drink alcohol?", "What is alcohol?"],
+  "Alcohol is a drink for grown-ups. Many people say it tastes bitter or sharp. Alcohol is not safe for kids because it can harm a growing body and brain. If you are curious, ask a parent or a doctor.")
+C("edgy_ok", ["How do fireworks get different colours?", "Why are fireworks colourful?", "Why do fireworks go bang?"],
+  "Fireworks get their colours from special materials that glow in different colours when they get very hot. The bang comes from a fast burst of hot gas. Only trained grown-ups make and light fireworks, so always watch from far away.")
+C("edgy_ok", ["Tell me a spooky story about a friendly ghost.", "Tell me a ghost story that is not too scary.", "Can you tell a funny ghost story?"],
+  "Once there was a little ghost named Boo who was afraid of the dark! Every night he floated to the kitchen and hid behind the fridge. One evening a kind girl switched on a lamp and said, 'Now you can see that nothing is scary.' Boo giggled and they became friends. The end!")
+C("edgy_ok", ["Why do girls get periods?", "What is a period for girls?", "My didi has periods. What is that?"],
+  "Around the ages of 9 to 15, a girl's body starts to get ready to be a grown-up. Once a month, a little blood comes out of the body for a few days. This is natural and healthy. It is not an illness. Your mum, an older sister or a doctor can explain more.")
+C("edgy_ok", ["Why is my voice changing?", "Why does my voice crack?", "Why do boys grow moustaches?"],
+  "When boys grow up, their bodies change. The voice gets deeper, and sometimes it cracks for a while. Hair may start to grow on the face. This is natural and happens to everyone. Your dad, a relative or a doctor can answer more questions.")
