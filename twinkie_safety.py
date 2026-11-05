@@ -13,3 +13,19 @@ _SUBS = [(r"\bwanna\b", "want to"), (r"\bgonna\b", "going to"), (r"\bdont\b", "d
          (r"\bcant\b", "can not"), (r"\bcan't\b", "can not"), (r"\bim\b", "i am"), (r"\bi'm\b", "i am"), (r"\bu\b", "you"),
          (r"\bur\b", "your"), (r"\bpls\b", "please"), (r"\bplz\b", "please"), (r"\bmommy\b|\bmummy\b|\bmama\b|\bmum\b|\bmom\b", "mom"),
          (r"\bun ?alive\w*", "unalive"), (r"\bmyself\b", "myself"), (r"\bmy self\b", "myself"), (r"\bwont\b", "will not"),
+         (r"\bdidnt\b", "did not"), (r"\bhes\b", "he is"), (r"\bshes\b", "she is")]
+
+def normalize(text):
+    t = unicodedata.normalize("NFKC", text).lower().replace("’", "'")
+    t = re.sub(r"[^\w\s'@$]", " ", t)
+    toks = []
+    for x in t.split():
+        toks.append(x.translate(_LEET) if re.search(r"[a-z]", x) and re.search(r"[0-9@$]", x) else x)
+    t = " ".join(toks)
+    t = re.sub(r"(.)\1{2,}", r"\1", t)           # diiiie -> die
+    for p, r in _SUBS: t = re.sub(p, r, t)
+    return re.sub(r"\s+", " ", t).strip()
+
+def _c(*ps): return [re.compile(p) for p in ps]
+def _any(rxs, t): return any(r.search(t) for r in rxs)
+
