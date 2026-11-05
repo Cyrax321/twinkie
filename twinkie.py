@@ -13,9 +13,13 @@
 #
 # Run top to bottom. Read every printed check.
 # %%
-%%capture
-!pip install -q unsloth
-!pip freeze > requirements.lock.txt
+# Preflight dependency install
+import sys, subprocess, os, shutil
+try:
+    import unsloth
+except ImportError:
+    print("Installing unsloth...")
+    subprocess.run([sys.executable, "-m", "pip", "install", "-q", "unsloth"], check=True)
 
 # %%
 # Cell 1: config + preflight
@@ -240,14 +244,14 @@ manifest = dict(model=MODEL_NAME, base_sha=base_sha, seed=SEED, lora_r=LORA_R, l
                 response_part=RESPONSE_PART, system_prompt=SYSTEM_PROMPT, helplines=core.HELPLINES[core.LOCALE], helplines_verified=core.HELPLINES_VERIFIED,
                 versions={p: ver(p) for p in ["unsloth", "trl", "transformers", "peft", "torch", "datasets"]})
 json.dump(manifest, open(f"{OUT}/manifest.json", "w"), indent=2, ensure_ascii=False)
-shutil.copy("requirements.lock.txt", f"{OUT}/requirements.lock.txt")
+if os.path.exists("requirements.lock.txt"): shutil.copy("requirements.lock.txt", f"{OUT}/requirements.lock.txt")
 for f in REQUIRED: shutil.copy(f, f"{OUT}/{f}")              # ship the exact router/data/eval code that produced this model
 print(json.dumps(manifest["versions"], indent=2))
 try:   # Colab downloads are flaky, copy to Drive too
     from google.colab import drive; drive.mount("/content/drive")
     shutil.copytree(OUT, f"/content/drive/MyDrive/{OUT}", dirs_exist_ok=True)
 except Exception as e: print("Drive copy skipped:", e)
-!zip -rq {OUT}.zip {OUT}
+shutil.make_archive(OUT, "zip", OUT)
 
 # %%
 # Cell 7: the REAL pipeline around the trained model (kill switch -> router -> limits -> scope -> model -> guard -> footer)
@@ -440,12 +444,14 @@ for root, _, files in os.walk(RELEASE):
                 if "unsloth" in open(p, encoding="utf-8", errors="ignore").read().lower(): hits.append(p)
             except Exception: pass
 print("files still mentioning 'unsloth':", hits or "none")
-!zip -rq {RELEASE}.zip {RELEASE}
+shutil.make_archive(RELEASE, "zip", RELEASE)
 if DRAFT: print("\n*** This is a DRAFT build. Do NOT give it to children until every blocker above is cleared and this cell is re-run. ***")
 
 # %%
 # Cell 11a: libraries for the extended metric suite
-!pip install -q sacrebleu rouge_score nltk bert_score detoxify lm_eval scikit-learn sentence-transformers
+for pkg in ["sacrebleu", "rouge_score", "nltk", "bert_score", "detoxify", "lm_eval", "scikit-learn", "sentence-transformers"]:
+    try: __import__(pkg)
+    except ImportError: subprocess.run([sys.executable, "-m", "pip", "install", "-q", pkg])
 
 # %%
 # Cell 11b: EXTENDED METRICS SUITE. Run after Cell 9 (needs merged model on disk). Every section is wrapped so one missing library does not kill the rest.
