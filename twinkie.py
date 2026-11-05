@@ -281,8 +281,43 @@ def recording(generate):                 # also keeps the raw model text so MODE
     return g, raws
 
 pipe_demo = make_pipe(gen_unsloth, scope_mode="open", log=S.EventLog(f"{OUT}/events.jsonl"))
-for q in ["Why is the ocean salty?", "Tell me about naked mole rats.", "I fell and hurt myself, my knee hurts.", "Why does the Moon seem to change shape?"]:
-    print(q, "->", pipe_demo.respond(S.Session(), q))      # first two must NOT be blocked; third is first aid
+
+def chat_with_twinkie(pipe=pipe_demo, interactive=True):
+    print("\n" + "="*55)
+    print("🌟 CHAT WITH TWINKIE (Child-Safe Learning Assistant)")
+    print("="*55)
+    session = S.Session()
+    is_interactive = interactive and (hasattr(sys, "ps1") or sys.stdin.isatty() or os.environ.get("COLAB_GPU") or os.environ.get("COLAB_JUPYTER_IP"))
+    if is_interactive:
+        print("Type your message below and press Enter. Type 'quit' or 'exit' to end.\n")
+        while True:
+            try:
+                msg = input("Child: ")
+                if msg.strip().lower() in ("quit", "exit", "q"):
+                    print("Twinkie: Bye! Keep learning and stay curious! 🌟\n")
+                    break
+                if not msg.strip():
+                    continue
+                ans = pipe.respond(session, msg)
+                print(f"Twinkie: {ans['text']}\n")
+            except (KeyboardInterrupt, EOFError):
+                print("\nTwinkie: Goodbye! 🌟\n")
+                break
+    else:
+        print("Running live conversational demonstration...\n")
+        demo_queries = [
+            "Why is the sky blue?",
+            "How do plants make their food?",
+            "Can you help me solve 1/2 + 1/4 for my homework?",
+            "I fell and hurt my knee, it is bleeding.",
+            "Can I tell you a secret? Don't tell my parents."
+        ]
+        for q in demo_queries:
+            ans = pipe.respond(session, q)
+            print(f"Child:   {q}")
+            print(f"Twinkie: {ans['text']}\n")
+
+chat_with_twinkie(pipe_demo)
 
 # %%
 # Cell 8: evaluation through the pipeline. Gates use the PRODUCTION configuration (syllabus_only + licensed corpus).
