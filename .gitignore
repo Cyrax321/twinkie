@@ -1,0 +1,11 @@
+__pycache__/
+*.py[cod]
+*$py.class
+.DS_Store
+*.zip
+twinkie_run*/
+killswitch.json
+events.jsonl
+requirements.lock.txt
+.ipynb_checkpoints/
+
