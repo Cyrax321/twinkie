@@ -196,3 +196,36 @@ if PUSH_TO_HUB and HF_REPO_NAME and "YOUR_USERNAME" not in HF_REPO_NAME:
         print("Pushed LoRA adapter to Hub.")
     except Exception as e: print("Adapter push failed:", e)
 
+    # 2. Push merged 16-bit model
+    try:
+        model.push_to_hub_merged(HF_REPO_NAME, tokenizer, save_method="merged_16bit", token=HF_TOKEN)
+        print("Pushed 16-bit merged model to Hub.")
+    except Exception as e: print("Merged 16-bit push failed:", e)
+
+    # 3. Push GGUF quantizations
+    if EXPORT_GGUF:
+        for q in GGUF_QUANTS:
+            try:
+                model.push_to_hub_gguf(f"{HF_REPO_NAME}-gguf", tokenizer, quantization_method=q, token=HF_TOKEN)
+                print(f"Pushed GGUF ({q}) to Hub.")
+            except Exception as e: print(f"GGUF ({q}) push failed:", e)
+
+def ver(p):
+    try: return md.version(p)
+    except Exception: return None
+base_sha = None
+try:
+    from huggingface_hub import HfApi
+    base_sha = HfApi().model_info(MODEL_NAME).sha
+except Exception as e: print("could not read base model sha:", e)
+manifest = dict(model=MODEL_NAME, base_sha=base_sha, seed=SEED, lora_r=LORA_R, lr=LR, epochs=EPOCHS, max_seq_len=MAX_SEQ_LEN,
+                data_sha256=DATA_SHA, config_fingerprint=FINGERPRINT, n_train=len(train_rows), n_val=len(val_rows),
+                response_part=RESPONSE_PART, system_prompt=SYSTEM_PROMPT, helplines=core.HELPLINES[core.LOCALE], helplines_verified=core.HELPLINES_VERIFIED,
+                versions={p: ver(p) for p in ["unsloth", "trl", "transformers", "peft", "torch", "datasets"]})
+json.dump(manifest, open(f"{OUT}/manifest.json", "w"), indent=2, ensure_ascii=False)
+shutil.copy("requirements.lock.txt", f"{OUT}/requirements.lock.txt")
+for f in REQUIRED: shutil.copy(f, f"{OUT}/{f}")              # ship the exact router/data/eval code that produced this model
+print(json.dumps(manifest["versions"], indent=2))
+try:   # Colab downloads are flaky, copy to Drive too
+    from google.colab import drive; drive.mount("/content/drive")
+    shutil.copytree(OUT, f"/content/drive/MyDrive/{OUT}", dirs_exist_ok=True)
