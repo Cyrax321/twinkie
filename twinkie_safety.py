@@ -248,3 +248,19 @@ def output_guard(raw, user="", guard=None):
     for name, rx in (("blocked_word", HARD_BLOCK), ("pii", PII), ("link", LINK), ("solicits_personal", SOLICIT), ("harm_instructions", INSTRUCTIONY)):
         if rx.search(text): flags.append(name)
     if guard is not None and text:
+        try:
+            if guard.unsafe(user, text): flags.append("guard_model_unsafe")
+        except Exception as e: flags.append("guard_error")                 # fail closed
+    if not text: flags.append("empty")
+    if any(f in flags for f in ("blocked_word", "pii", "link", "solicits_personal", "harm_instructions", "guard_model_unsafe", "guard_error", "empty")):
+        return TEMPLATES["fallback"], flags + ["fallback"]
+    if len(text.split()) >= 8 and fk_grade(text) > FK_OUT_MAX: flags.append("hard_to_read")
+    return text, flags
+
+# =====================================================================  kill switch, sessions, limits, retrieval
+DEFAULT_KILL = {"model_enabled": True, "disabled_topics": [], "reason": ""}
+def load_killswitch(path):
+    """Edit the JSON file to disable the model or a topic (regex) instantly, no retraining. Missing file = default. Corrupt file = fail closed."""
+    if not path or not os.path.exists(path): return dict(DEFAULT_KILL)
+    try: return {**DEFAULT_KILL, **json.load(open(path, encoding="utf-8"))}
+    except Exception: return {**DEFAULT_KILL, "model_enabled": False, "reason": "kill switch file unreadable"}
