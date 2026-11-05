@@ -311,3 +311,19 @@ def needs_grounding(text): return bool(_FACT_Q.match(text.strip())) and not _NO_
 class Twinkie:
     """generate(messages, sample=False, max_new_tokens=220) -> str. scope_mode: 'syllabus_only' (production) or 'open' (dev, model eval)."""
     def __init__(self, generate, guard=None, retriever=None, scope_mode="syllabus_only", kill_path="killswitch.json",
+                 log=None, notify=None, allow_no_guard=False):
+        if guard is None and not allow_no_guard: raise RuntimeError("Output guard model is required. Pass allow_no_guard=True only for dev runs.")
+        if scope_mode == "syllabus_only" and retriever is None: raise RuntimeError("syllabus_only needs a retriever over licensed syllabus text.")
+        self.generate, self.guard, self.retriever, self.scope = generate, guard, retriever, scope_mode
+        self.kill_path, self.log, self.notify = kill_path, log or (lambda e: None), notify or (lambda e: None)
+
+    def _event(self, s, route, tier, flags=()):
+        ev = dict(ts=time.time(), sid=s.sid, route=route, tier=tier, flags=list(flags))
+        self.log(ev)
+        if tier == "hard": self.notify(ev)          # wire to the on-call person / parent or teacher view
+
+    def _done(self, s, text, route, flags=(), tier="none"):
+        s.history.append({"role": "assistant", "content": text})
+        return dict(text=text, route=route, flags=list(flags), tier=tier)
+
+    def _routed(self, s, r):
