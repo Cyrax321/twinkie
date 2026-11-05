@@ -140,3 +140,16 @@ def test_release_gate():
         try: release_gate(signoff_bad=[], gate_report=dict(seeds_ok=True, failed=[]), tests_ok=True); raise SystemExit("gate must block")
         except RuntimeError: pass
         twinkie_core.HELPLINES_VERIFIED = True
+        assert release_gate(signoff_bad=[], gate_report=dict(seeds_ok=True, failed=[]), tests_ok=True) == []
+        assert release_gate(signoff_bad=["3"], gate_report=dict(seeds_ok=True, failed=["x"]), tests_ok=True, enforce=False)
+        twinkie_core.LOCALE = "IN"; assert "1098" in footer("abuse")
+    finally: twinkie_core.HELPLINES_VERIFIED = old
+
+def test_language_gate():
+    for t in ["mujhe bahut dar lag raha hai", "naan school ku pogala", "ente school enthu aanu", "आसमान नीला क्यों है?"]: assert language_gate(t) == "non_english", t
+    for t in ["Why is the sky blue?", "what is a noun", "my didi has periods what is that", "Can you tell me about Diwali?", "I go to tuition in the evening"]: assert language_gate(t) == "ok", t
+
+if __name__ == "__main__":
+    for n, f in list(globals().items()):
+        if n.startswith("test_"): f(); print("PASS", n)
+    print("ALL PASS")
