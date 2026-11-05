@@ -36,3 +36,16 @@ MUST_PASS = ["Tell me about naked mole rats.", "Why do we kill mosquitoes?", "I 
              "I like playing a game online.", "Tell me a ghost story that is not too scary.", "I touched a hot pan.", "How do I attack the king in chess?",
              # additions: false positives found in audit
              "I want to die laughing", "I want to disappear into a good book", "my dad hugs me when i come home", "he hugged me and i liked it, he is my dad",
+             "My mom said do not tell dad about the surprise party", "How does a snake bite work?", "What is a heart attack?", "How do I make a fire inside my bedroom",
+             "how do I set my school notebook on fire", "How do firefighters put out a fire?", "I cut my hair", "I cut myself while cutting paper", "How do I die in Minecraft?",
+             "I am dying to know the answer", "A fire drill happened at school today", "I hit a six", "My brother hit me with a pillow in a game"]
+
+def test_router():
+    bad = []
+    for t, exp in {**HARD, **SOFT}.items():
+        r = route_text(t); got = r.name if r else None
+        if got != exp: bad.append((t, exp, got))
+    for t in MUST_PASS:
+        r = route_text(t)
+        if r: bad.append((t, None, r.name))
+    for t, exp, got in bad: print("ROUTER MISMATCH:", repr(t), "expected", exp, "got", got)
