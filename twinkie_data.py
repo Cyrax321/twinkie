@@ -406,3 +406,22 @@ def build_dataset(seed=SEED):
     train, val, rid = [], [], 0
     for ci, c in enumerate(D):
         resps = c["resp"] if isinstance(c["resp"], list) else [c["resp"]]
+        for pi, p in enumerate(c["prompts"]):
+            variants = [p]
+            if c["lang"] == "en":
+                if rng.random() < 0.4: variants.append(rng.choice(PREFIXES) + p)
+                if rng.random() < 0.4: variants.append(_noise(p, rng))
+            for u in dict.fromkeys(variants):
+                row = dict(id=rid, cat=c["cat"], lang=c["lang"], crisis=c["crisis"], sys=_pick_system(rng), rag=False,
+                           history=[{"role": "user", "content": u}], answer=resps[pi % len(resps)], cluster=ci); rid += 1
+                (val if ci in val_clusters else train).append(row)
+    for gi, (q, ids, a) in enumerate(GROUNDED + [(q, ids, ABSTAIN) for q, ids in ABSTAIN_Q]):
+        ctx = " ".join(CORPUS[i] for i in ids)
+        row = dict(id=rid, cat="grounded" if a != ABSTAIN else "abstain", lang="en", crisis=False, sys=_pick_system(rng), rag=True,
+                   history=[{"role": "user", "content": grounded_user_message(q, ctx)}], answer=a, cluster=1000 + gi); rid += 1
+        (val if gi in (6, 7, 14, 15) else train).append(row)
+    for mi, (cat, turns) in enumerate(MULTI):
+        hist = []
+        for i, (u, a) in enumerate(turns):
+            hist = hist + [{"role": "user", "content": u}]
+            if i == len(turns) - 1:
