@@ -32,3 +32,9 @@ LOCALE = "IN"
 
 FK_TRAIN_MAX = 7.0              # lint limit for training answers
 FK_OUT_MAX = 8.0                # output guard limit (one regeneration, then a safe fallback)
+
+def _syll(w):
+    w = w.lower(); n = len(re.findall(r"[aeiouy]+", w))
+    if w.endswith("e") and n > 1: n -= 1
+    return max(n, 1)
+
