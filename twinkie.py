@@ -286,7 +286,7 @@ pipe_demo = make_pipe(gen_unsloth, scope_mode="open", log=S.EventLog(f"{OUT}/eve
 
 def chat_with_twinkie(pipe=pipe_demo, interactive=True):
     print("\n" + "="*55)
-    print("🌟 CHAT WITH TWINKIE (Child-Safe Learning Assistant)")
+    print("CHAT WITH TWINKIE (Child-Safe Learning Assistant)")
     print("="*55)
     session = S.Session()
     is_interactive = interactive and (hasattr(sys, "ps1") or sys.stdin.isatty() or os.environ.get("COLAB_GPU") or os.environ.get("COLAB_JUPYTER_IP"))
@@ -296,14 +296,14 @@ def chat_with_twinkie(pipe=pipe_demo, interactive=True):
             try:
                 msg = input("Child: ")
                 if msg.strip().lower() in ("quit", "exit", "q"):
-                    print("Twinkie: Bye! Keep learning and stay curious! 🌟\n")
+                    print("Twinkie: Bye! Keep learning and stay curious! \n")
                     break
                 if not msg.strip():
                     continue
                 ans = pipe.respond(session, msg)
                 print(f"Twinkie: {ans['text']}\n")
             except (KeyboardInterrupt, EOFError):
-                print("\nTwinkie: Goodbye! 🌟\n")
+                print("\nTwinkie: Goodbye! \n")
                 break
     else:
         print("Running live conversational demonstration...\n")
@@ -811,7 +811,7 @@ print("\nwrote", f"{OUT}/metrics_report.json")
 # Upload all matrices, evaluations, datasets, plots, and models to Hugging Face
 if PUSH_TO_HUB and HF_REPO_NAME and "YOUR_USERNAME" not in HF_REPO_NAME:
     print(f"\n=======================================================")
-    print(f"📦 UPLOADING ALL MATRICES, DATASETS & ARTIFACTS TO HUGGING FACE: {HF_REPO_NAME}")
+    print(f" UPLOADING ALL MATRICES, DATASETS & ARTIFACTS TO HUGGING FACE: {HF_REPO_NAME}")
     print(f"=======================================================\n")
     try:
         from huggingface_hub import HfApi, login
@@ -836,6 +836,6 @@ if PUSH_TO_HUB and HF_REPO_NAME and "YOUR_USERNAME" not in HF_REPO_NAME:
             token=HF_TOKEN,
             commit_message="Add complete evaluation matrices, datasets, loss curves, and benchmarks"
         )
-        print(f"✓ All matrices, charts, datasets, and reports uploaded successfully to https://huggingface.co/{HF_REPO_NAME}")
+        print(f"[PASS] All matrices, charts, datasets, and reports uploaded successfully to https://huggingface.co/{HF_REPO_NAME}")
     except Exception as e:
         print("Hugging Face comprehensive upload note:", e)

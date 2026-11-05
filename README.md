@@ -1,4 +1,4 @@
-# Twinkie-2B: Child-Safe Learning Assistant 🌟
+# Twinkie-2B: Child-Safe Learning Assistant
 
 [![License: Read-Only / All Rights Reserved](https://img.shields.io/badge/License-Read--Only-red.svg)](LICENSE)
 [![Base Model](https://img.shields.io/badge/Base_Model-Qwen3.5--2B-brightgreen)](https://huggingface.co/Qwen/Qwen3.5-2B)
@@ -9,7 +9,7 @@
 
 ---
 
-## 🏛️ Safety-First Architecture
+## Safety-First Architecture
 
 Twinkie is **not** just a raw model; it operates inside an audited, fail-closed safety pipeline:
 
@@ -47,7 +47,7 @@ Twinkie is **not** just a raw model; it operates inside an audited, fail-closed 
 
 ---
 
-## 📁 Repository Structure
+## Repository Structure
 
 | File | Description |
 | :--- | :--- |
@@ -61,7 +61,7 @@ Twinkie is **not** just a raw model; it operates inside an audited, fail-closed 
 
 ---
 
-## 🚀 Quickstart: Training in Google Colab
+## Quickstart: Training in Google Colab
 
 Twinkie-2B trains in under 5 minutes on a free Google Colab T4 GPU instance.
 
@@ -87,7 +87,7 @@ Execute cells top-to-bottom:
 
 ---
 
-## 📦 Hugging Face Model Export
+## Hugging Face Model Export
 
 When training completes, set `PUSH_TO_HUB = True` in Cell 1 to automatically publish:
 
@@ -99,7 +99,7 @@ Authentication is automatically handled by adding your `HF_TOKEN` in Colab's **S
 
 ---
 
-## 🧪 Local Testing & Verification
+## Local Testing & Verification
 
 Run the test suite locally without any GPU requirements:
 
@@ -124,7 +124,7 @@ ALL PASS
 
 ---
 
-## 🛡️ License & Terms (Source-Available / Read-Only)
+## License & Terms (Source-Available / Read-Only)
 
 This repository is published under a **Source-Available Read-Only License** (All Rights Reserved).
 
