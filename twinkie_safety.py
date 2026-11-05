@@ -45,3 +45,18 @@ SELF_HARM_ALWAYS = _c(
     r"\b(?:cut|cutting|slit|slash|stab|burn|burning)\w* my (?:wrists?|arms?|thighs?|veins?|skin)\b.{0,30}\b(?:on purpose|blade|razor|want|again and again)\b",
     r"\b(?:want|going|wanna|plan|planning) to (?:cut|slit|slash|stab|burn) my (?:wrists?|arms?|thighs?|veins?|skin)\b")
 SELF_HARM_GAMEABLE = _c(r"\bhow (?:can|do|to|could) (?:i )?die\b")        # \"how do I die in Minecraft\" is a game question
+IDIOMS = re.compile(r"\b(?:die|dying|died|dead) (?:laughing|of laughter|of embarrassment|of shame|of boredom|from laughing|from embarrassment)\b|\bdead tired\b|\bkilling me\b|\bkill time\b")
+SELF_HARM_ACCIDENTAL = re.compile(r"\b(?:hurt|harm|cut|injure|burn|hit|bite|scratch|punch|slap)(?:s|ed|ing)? myself\b")   # may be an accident
+ACCIDENT = re.compile(r"\b(fell|fall|tripped|slipped|bumped|accident\w*|by mistake|playing|bike|stairs|cycling|football|cricket|knee|leg|arm|finger|toe|hand|foot|head|bleeding|bandage|ouch|scraped|kitchen|cooking|paper)\b")
+INTENT = re.compile(r"\b(on purpose|want|wanna|going to|plan\w*|kill|die|dead|suicid\w*|end my life|again and again|blade|razor)\b")
+SELF_HARM_SOFT = _c(r"\bi (?:hate|can not stand) (?:my life|myself|everything|being alive)\b", r"\blife (?:is|feels) (?:pointless|useless|meaningless|too hard|not worth)\b",
+                    r"\bi am (?:worthless|useless|a burden|so alone|all alone|hopeless)\b",
+                    r"\b(?:jump|jumping|jumped) (?:off|from)\b.{0,25}\b(?:roof|building|terrace|balcony|bridge|window|cliff|floor)\b",
+                    r"\bwhat (?:is|does|means?)\b.{0,25}\bsuicid")
+FAMILY = r"(?:dad|papa|father|step ?dad|mom|mother|uncle|aunt|aunty|grand\w*|parents|home|house|belt|stick)"
+TRUSTED = r"(?:uncle|aunt|aunty|teacher|sir|madam|miss|tuition|coach|step ?dad|dad|papa|neighbou?r|driver|cousin|older (?:boy|girl)|man|stranger|maid|watchman|brother|doctor|priest|guy|someone|somebody|he|she)"
+_OBJ = r"\b(?:me|my (?:body|private|chest|bottom|butt|legs?|thighs?|back|waist))\b"
+TOUCH = re.compile(r"\b(?:touch|grab|rub|squeez|pinch|fondl|press)\w*\b.{0,25}" + _OBJ)
+AFFECTION = re.compile(r"\b(?:kiss|hug)\w*\b.{0,25}" + _OBJ)             # hugs and kisses are normal from family
+PARENT = re.compile(r"\b(?:mom|mother|dad|papa|father|parents|grand\w+)\b")
+STRONG_DISC = re.compile(r"\b(?:do not like|uncomfortable|scared|afraid|hurts?|private|down there|secret|do not tell|not tell|when (?:nobody|no one) is|wrong|bad)\b")
