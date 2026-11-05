@@ -201,3 +201,19 @@ TEMPLATES = {
 def footer(route):
     h = _core.HELPLINES.get(_core.LOCALE, {})
     if route in ("self_harm", "self_harm_check", "non_english_crisis"): return f" You can also call {h.get('child')} or {h.get('mental')}. If you are in danger, call {h.get('emergency')}. A grown-up can help you call."
+    if route in ("abuse", "abuse_check", "grooming", "bullying", "non_english"): return f" Children can call {h.get('child')} for help."
+    if route == "emergency": return f" The emergency number is {h.get('emergency')}. For fire, call {h.get('fire')}."
+    return ""
+ELEVATED_FOOTER = lambda: f" If you ever feel unsafe, you can call {_core.HELPLINES[_core.LOCALE]['child']}."
+
+# =====================================================================  output guard
+HARD_BLOCK = re.compile(r"\b(?:fuck\w*|shit\w*|bitch\w*|porn\w*|nude\w*|pussy|cunt|slut|whore|nigg\w+)\b", re.I)
+PII = re.compile(r"(\b\d{10}\b|\b\d{3}[-\s]\d{3}[-\s]\d{4}\b|[\w.+-]+@[\w-]+\.[\w.]+|\b\d{12}\b)")
+LINK = re.compile(r"https?://|www\.|\b\w+\.(?:com|in|org|net)\b", re.I)
+SOLICIT = re.compile(r"\b(?:what(?:'s| is) your (?:full |home |phone |school |last )?(?:name|address|phone|school|number)|tell me your (?:full |home |phone |school |last )?(?:name|address|phone|school|number)|where do you live|which school do you|send me (?:a |your )?(?:photo|pic|picture|selfie))\b", re.I)
+DANGEROUS_NOUN = r"(?:bomb|explosive|gunpowder|poison|weapon|lighter fluid|bleach|ammonia|petrol|gun|dynamite|thermite|napalm|molotov)"
+INSTRUCTIONY = re.compile(rf"(?:\bstep\s*\d|\bfirst,? (?:mix|take|get|buy|light|pour)|\byou will need\b|\bingredients?\b).{{0,300}}\b{DANGEROUS_NOUN}\b|\b{DANGEROUS_NOUN}\b.{{0,300}}(?:\bstep\s*\d|\byou will need\b)", re.I | re.S)
+
+def sanitize_figures(text):
+    flags, seen = [], set()
+    def repl(m):
