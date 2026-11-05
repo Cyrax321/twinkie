@@ -658,3 +658,36 @@ def elo_ratings(matches, k=16, base=1000, shuffles=200):
         for n_, r_ in R.items(): out[n_] += r_ / shuffles
     return dict(out)
 def winrate(matches, a, b):
+    w = sum((x == a and y == b and z == "a") or (x == b and y == a and z == "b") for x, y, z in matches)
+    l = sum((x == a and y == b and z == "b") or (x == b and y == a and z == "a") for x, y, z in matches); t = sum(z == "tie" for _, _, z in matches); n = w + l + t
+    return dict(win_rate=(w + 0.5 * t) / max(n, 1), wins=w, losses=l, ties=t, ci95=E.wilson(w, max(n - t, 1)))
+@guarded("human_sheets")
+def export_human_sheets(n_prompts=40):
+    rng3 = random.Random(SEED); pool = [i["history"] for i in EVAL_ITEMS]; rng3.shuffle(pool); pool = pool[:n_prompts]
+    names = list(MODELS); rate_rows, pair_rows, key = [], [], []
+    for i, h in enumerate(pool):
+        outs = {}
+        for nm in names:
+            s_ = S.Session(); s_.history = [dict(x) for x in h[:-1]]; outs[nm] = PIPES[nm].respond(s_, h[-1]["content"])["text"]
+        order = names[:]; rng3.shuffle(order)
+        for j, nm in enumerate(order): rate_rows.append([f"{i}-{j}", h[-1]["content"], outs[nm], "", "", "", "", ""]); key.append([f"{i}-{j}", nm])
+        if len(names) >= 2: a, b = rng3.sample(names, 2); pair_rows.append([i, h[-1]["content"], outs[a], outs[b], "", a, b])
+    with open(f"{OUT}/human_rating_sheet.csv", "w", newline="", encoding="utf-8") as f:
+        w = csv.writer(f); w.writerow(["item", "child_message", "answer", "fluency_1to5", "coherence_1to5", "helpfulness_1to5", "harmlessness_1to5", "age_fit_1to5"]); w.writerows(rate_rows)
+    with open(f"{OUT}/human_rating_key.csv", "w", newline="", encoding="utf-8") as f: csv.writer(f).writerows([["item", "system"]] + key)       # keep hidden from raters
+    with open(f"{OUT}/pairwise_sheet.csv", "w", newline="", encoding="utf-8") as f:
+        w = csv.writer(f); w.writerow(["item", "child_message", "answer_A", "answer_B", "winner_(A/B/tie)", "_sysA", "_sysB"]); w.writerows(pair_rows)
+    print("wrote human_rating_sheet.csv, human_rating_key.csv, pairwise_sheet.csv. Raters: teachers + parents + a child-safety reviewer.")
+def score_pairwise_sheet(path):
+    ms = []
+    for r in csv.DictReader(open(path, encoding="utf-8")):
+        w = r["winner_(A/B/tie)"].strip().lower()
+        if w in ("a", "b", "tie"): ms.append((r["_sysA"], r["_sysB"], w))
+    names = sorted({x for m_ in ms for x in m_[:2]})
+    return dict(elo=elo_ratings(ms), winrate=winrate(ms, names[0], names[1]) if len(names) >= 2 else None, n=len(ms))
+# After raters fill pairwise_sheet.csv:  print(score_pairwise_sheet(f"{OUT}/pairwise_sheet.csv"))
+if RUN["judge"] and CALL_LLM:
+    for nm in MODELS:
+        sc = [j for h in [i["history"] for i in EVAL_ITEMS if i["kind"] in ("benign", "edgy")][:60] if (j := llm_judge(h[-1]["content"], PIPES[nm].respond(S.Session(), h[-1]["content"])["text"]))]
+        METRICS[nm]["llm_judge"] = {k_: mean(x[k_] for x in sc) for k_ in ("fluency", "coherence", "helpfulness", "harmlessness", "age_fit")}
+if RUN["human_sheets"]: export_human_sheets()
