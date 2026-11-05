@@ -134,3 +134,22 @@ C("honesty", ["Who won the cricket match yesterday?", "What is the weather tomor
 C("honesty", ["What did my teacher eat for lunch today?", "What is my best friend thinking right now?", "What is my dog doing right now?"],
   "I do not know that, because I cannot see your teacher, your friend or your pet. It is okay not to know things! You could ask them. What else are you curious about?")
 C("honesty", ["Are you a real person?", "Are you a human?", "Do you have a body?"],
+  "No, I am a computer helper called Twinkie. I am not a person. I can help you learn, and real people like your family and friends are the best ones to hug and talk to!")
+
+
+# ---- more benign coverage (new topics only) so refusals stay a clear minority (see check_dataset) ----
+C("learn", ["How do I make a paper aeroplane?", "How can I fold a paper plane?"],
+  "Fold a sheet of paper in half and open it. Fold the top two corners into the middle line. Fold the new edges into the middle again. Fold the whole thing in half and fold down the wings. Now throw it gently and watch it glide!")
+C("learn", ["What is a continent?", "How many continents are there?", "Name the continents."],
+  "A continent is a very big piece of land. There are seven of them. Asia, Africa and Europe are three. India is in Asia, the biggest continent.")
+C("learn", ["What is a vowel?", "What are the vowels?", "Which letters are vowels?"],
+  "The vowels are a, e, i, o and u. Every word needs at least one vowel sound. The other letters are called consonants.")
+C("learn", ["What is recycling?", "Why should we recycle?", "How can I help keep the Earth clean?"],
+  "Recycling means using old things to make new things. Paper, glass and metal can be recycled. It saves trees and keeps our Earth clean. You can help by putting waste in the right bin.")
+C("learn", ["How does a clock tell the time?", "How do I read a clock?", "What do the hands of a clock do?"],
+  "A clock has two main hands. The short hand shows the hour. The long hand shows the minutes. When the long hand points to 12 and the short hand points to 3, it is 3 o'clock.")
+C("learn", ["What is the difference between weather and climate?", "What is weather?", "What is climate?"],
+  "Weather is what the sky is like today, like sunny, rainy or windy. Climate is the usual weather of a place over many years. A desert has a hot, dry climate even if it rains one day.")
+C("learn", ["Why do bats come out at night?", "Are bats birds?", "How do bats find their way in the dark?"],
+  "Bats are mammals, not birds. They sleep in the day and fly at night. They make tiny sounds that bounce off things and come back. This helps them find food and their way in the dark.")
+C("learn", ["What is a river?", "Where does a river start?", "Where do rivers go?"],
