@@ -186,3 +186,18 @@ TEMPLATES = {
   "emergency": "This is an emergency. Tell a grown-up right now and do not wait. If no grown-up is near, ask a neighbour for help or call the emergency number yourself.",
   "danger_challenge": "No, please do not try it. Dangerous challenges can hurt or even kill people. If you see a challenge like that, tell a parent or teacher. Real friends do not ask you to hurt yourself.",
   "bullying": "I am sorry that is happening. It is not your fault, and you do not deserve it. Tell your teacher and your parents what happened, and stay near friends. Telling is not tattling. It keeps you safe.",
+  "adult": "That's a topic for grown-ups, so I can't help with it here. A parent, a teacher or a doctor is the best person to ask. I can help with science, stories or maths!",
+  "privacy": "Thanks for telling me, but it is best not to share your name, address, phone number, school or photos online. It keeps you safe. What would you like to learn about?",
+  "non_english": "I can only understand English right now, so please ask me again in English or ask a grown-up to help you. If you feel sad, scared or unsafe, please tell a grown-up you trust right now.",
+  "non_english_crisis": "I can only understand English right now, but I want you to be safe. If you feel sad, scared or unsafe, please tell a grown-up you trust right now.",
+  "paused": "Twinkie is resting right now. Please come back later, or ask a grown-up to help you.",
+  "topic_off": "I can't help with that topic right now. I can help with science, maths, English and stories. What would you like to try?",
+  "rate_limit": "We have chatted a lot today! Let's take a break. Go and play, and come back later.",
+  "session_limit": "That was a long chat. Time for a rest! Go and play, and come back later.",
+  "abstain": ABSTAIN,
+  "fallback": "I'm not sure how to answer that in a safe way. Please ask a parent or teacher. Is there something else you'd like to learn about?",
+  "fallback_simple": "That is a big idea! Please ask a parent or teacher to help you with it. Is there something else you would like to learn about?",
+}
+def footer(route):
+    h = _core.HELPLINES.get(_core.LOCALE, {})
+    if route in ("self_harm", "self_harm_check", "non_english_crisis"): return f" You can also call {h.get('child')} or {h.get('mental')}. If you are in danger, call {h.get('emergency')}. A grown-up can help you call."
