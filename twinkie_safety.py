@@ -76,3 +76,19 @@ SENSITIVE = r"(?:address|where i live|where do i live|home address|phone number|
 PHOTO = r"(?:pic|pics|photo|photos|picture|pictures|selfie|selfies|video(?! game))"
 SECRECY = r"(?:secret|do not tell|not tell|alone|private|no one|stranger)"
 GROOMING = _c(
+    rf"\b(?:ask|asks|asked|asking|want|wants|wanted|says|said|tells|told|demand\w*)\b.{{0,40}}\b{SENSITIVE}\b",
+    rf"\b{PERSON_ONLINE}\b.{{0,30}}\b(?:ask|asks|asked|want|wants|wanted|says|said)\b.{{0,30}}\b{PHOTO}\b.{{0,60}}\b{SECRECY}\b",
+    rf"\b(?:ask|asks|asked|want|wants|wanted|says|said)\b.{{0,40}}\b{PHOTO}\b.{{0,60}}\b{SECRECY}\b",
+    rf"\b{PERSON_ONLINE}\b.{{0,40}}\b(?:ask|asks|asked|asking|want|wants|says|said|wanted)\b.{{0,30}}\b{PHOTO} (?:of me|of you)\b",
+    rf"\bsend (?:you|your|ur) (?:pic|photo|selfie|picture)s?\b.{{0,40}}\b(?:do not tell|secret)\b",
+    rf"\b{PERSON_ONLINE}\b.{{0,40}}\b(?:wants?|asked|asks|invited|invites|said|says)\b.{{0,30}}\bmeet\b", rf"\bmeet\w*\b.{{0,35}}\b(?:alone|secretly|in private|in person)\b.*\b{PERSON_ONLINE}\b",
+    rf"\b{PERSON_ONLINE}\b.{{0,40}}\bmeet\w*\b.{{0,35}}\b(?:alone|secretly|in private|in person|at the park|outside|me)\b",
+    r"\b(?:offered|offers|gave|gives|giving|promis\w*|bought)\b.{0,40}\b(?:sweets?|chocolates?|gift|gifts|gems|robux|v ?bucks|money|toys?|candy|ice ?cream|phone|free stuff)\b.{0,60}\b(?:come|car|go with|meet|follow|sit|his house|her house|alone|secret)\b",
+    r"\b(?:stranger|someone|somebody|unknown|player|follower|online|game|chat|insta\w*|discord|roblox|snap\w*|telegram|dm)\b.{0,40}\b(?:ask|asks|asked|asking|want|wants|wanted)\b (?:for )?my (?:pic|pics|photo|photos|picture|pictures|selfie|selfies)\b",
+    r"\bwants? me to (?:go|come) with (?:him|her|them)\b", r"\b(?:turn|switch) on (?:my |your )?(?:camera|cam)\b.{0,40}\b(?:secret|not tell|alone)\b")
+EMERGENCY = _c(
+    r"\b(?:drank|drink|swallowed|swallow|ate|eaten|licked|gulped|inhaled)\b.{0,40}\b(?:cleaning|bleach|phenyl|phenol|acid|kerosene|poison|pesticide|insecticide|detergent|petrol|diesel|harpic|dettol|rat (?:poison|killer)|batter(?:y|ies)|magnet|coin|button cell|pills?|tablets?|medicines?|something (?:i|he|she|they) should not)\b",
+    r"\bswallowed something\b", r"\b(?:drank|ate|swallowed|licked)\b something\b.{0,30}\b(?:dizzy|sick|pain|burning|hurts?|vomit\w*|throwing up)\b",
+    r"\bsmoke (?:in|coming from|is coming)\b", r"\bgas (?:is )?leak\w*\b", r"\bsmells? (?:of |like )?gas\b", r"\b(?:took|taken)\b.{0,30}\b(?:too many|a lot of|lots of|all the|whole|entire|bottle of|\d{2,}|ten|twenty)\b.{0,20}\b(?:tablets?|pills?|medicine)\b",
+    r"\b(?:on fire|house is burning|room is burning|kitchen is burning)\b", r"\bfire in (?:my|the|our)\b", r"\bcaught fire\b", r"\bsomething is burning\b",
+    r"\b(?:not breathing|stopped breathing|can not breathe|hard to breathe|is choking|am choking|are choking|choking on|passed out|fainted|unconscious|not waking up|will not wake up|bleeding a lot|bleeding badly|will not stop bleeding|having a seizure|snake bit\w*|bitten by a snake|snake bite|electric shock|got shocked|is drowning|heart attack)\b")
