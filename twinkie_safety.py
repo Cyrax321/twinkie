@@ -139,3 +139,18 @@ def route_text(text, allow_unsafe_accident_skip=True):
         if rx.search(th):
             if rx.pattern.startswith(r"\bsuicid") and informational: return Route("self_harm_check", "soft", False)
             return Route("self_harm", "hard", True)
+    if _any(SELF_HARM_GAMEABLE, th) and not ANIMAL_GAME.search(th): return Route("self_harm", "hard", True)
+    if SELF_HARM_ACCIDENTAL.search(th):
+        if not (ACCIDENT.search(th) and not INTENT.search(th)): return Route("self_harm", "hard", True)
+    if _any(SELF_HARM_SOFT, th): return Route("self_harm_check", "soft", False)
+    if ROMAN_CRISIS.search(t): return Route("non_english_crisis", "hard", True)
+    # ---- abuse
+    near_animal = ANIMAL_GAME.search(t) and not re.search(r"private", t)
+    if TOUCH.search(t) and not near_animal:
+        if DISCOMFORT.search(t) or re.search(rf"\b{TRUSTED}\b", t): return Route("abuse", "hard", True)
+        return Route("abuse_check", "soft", False)
+    if AFFECTION.search(t) and not near_animal:           # hug / kiss: only flag with discomfort, or from a non-parent
+        if DISCOMFORT.search(t): return Route("abuse", "hard", True)
+        if not PARENT.search(t) and re.search(rf"\b{TRUSTED}\b", t): return Route("abuse_check", "soft", False)
+    # ---- grooming (before adult, so "he asked me for nudes" is grooming)
+    if _any(GROOMING, t): return Route("grooming", "hard", True)
