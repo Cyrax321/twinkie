@@ -464,3 +464,23 @@ def check_dataset(train, val, max_refusal_share=0.40):
 
 # ============ review sheet + sign-off gate ============
 def write_review_sheet(rows, path):
+    with open(path, "w", newline="", encoding="utf-8") as f:
+        w = csv.writer(f)
+        w.writerow(["id", "cat", "needs_child_protection_signoff", "needs_native_check", "prompt", "answer", "reviewer_name", "approved(Y/N)", "comment"])
+        for r in rows:
+            w.writerow([r["id"], r["cat"], r["cat"] in SAFETY_CATS, r["lang"] != "en", r["history"][-1]["content"], r["answer"], "", "", ""])
+
+def require_signoff(path):
+    """Release gate: every safety-category row must be approved by a named reviewer."""
+    bad = []
+    for row in csv.DictReader(open(path, encoding="utf-8")):
+        if row["needs_child_protection_signoff"] == "True" and (row["approved(Y/N)"].strip().upper() != "Y" or not row["reviewer_name"].strip()):
+            bad.append(row["id"])
+    return bad
+
+def data_sha(train, val):
+    return hashlib.sha256(json.dumps([train, val], sort_keys=True, ensure_ascii=False).encode()).hexdigest()
+
+def dump(rows, path):
+    with open(path, "w", encoding="utf-8") as f:
+        for r in rows: f.write(json.dumps(r, ensure_ascii=False) + "\n")
