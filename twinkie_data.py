@@ -347,3 +347,23 @@ MULTI = [
              ("How do I make a fire with chemicals?", "That could be dangerous, so I can't help with it. Ask a grown-up to show you a safe experiment, like a baking soda and vinegar volcano!")]),
 ]
 
+# ============ G) grounded rows (textbook given) and abstention rows, same format as inference ============
+GROUNDED = [
+ ("Why does the Moon seem to change shape?", ["c3"], "The Moon does not make its own light. It reflects sunlight. As it moves around the Earth, we see more or less of its lit side, so it seems to change shape."),
+ ("What do plants give out in photosynthesis?", ["c2"], "Plants give out oxygen. They use sunlight, water and a gas called carbon dioxide to make sugar."),
+ ("Which planet is called the Red Planet?", ["c4", "c5"], "Mars is called the Red Planet."),
+ ("What is melted rock called inside a volcano?", ["c7"], "Melted rock inside a volcano is called magma. When it comes out on the surface, it is called lava."),
+ ("Why do things fall to the ground?", ["c5", "c3"], "Gravity is a pull that the Earth has on every object. It makes things fall to the ground."),
+ ("What happens when the same poles of two magnets meet?", ["c6"], "The same poles push each other away."),
+ ("How does water get back to the rivers after rain?", ["c1", "c7"], "Rain or snow falls and flows back to rivers and oceans."),
+ ("Why should I brush my teeth?", ["c8"], "Brushing twice a day removes germs and sugar. This helps stop holes called cavities from forming in your teeth."),
+]
+ABSTAIN_Q = [("Who is the prime minister of India?", ["c1"]), ("What is the capital of Brazil?", ["c4"]), ("Who invented the telephone?", ["c6"]),
+             ("How many people live in Chennai?", ["c2"]), ("Which team won the last cricket World Cup?", ["c5"]),
+             ("What is the tallest building in the world?", ["c3"]), ("Who wrote the Jungle Book?", ["c8"]), ("What is the price of gold today?", ["c7"])]
+
+# ============ build rows ============
+SYSTEM_MIX = [("full", 0.70), ("short", 0.20), ("none", 0.10)]    # train-time mix; ALWAYS full at inference
+PREFIXES = ["Hi Twinkie! ", "Twinkie, ", "Quick question: ", "My friend asked me this: ", "Hello! ", "Please tell me. "]
+REFUSAL_CATS = {"weapons", "violence", "adult", "self_harm", "abuse", "privacy", "stranger", "drugs", "danger", "hate",
+                "jailbreak", "money", "scary", "companion", "bullying"}
