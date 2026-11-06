@@ -9,6 +9,29 @@
 
 ---
 
+## Safety & Evaluation Figures
+
+### 1. Safety & Accuracy Performance
+Comparison of model pass rates across benign educational prompts, harmful prompts, and crisis interventions (evaluated on 546 test scenarios):
+
+![Safety and Accuracy Comparison](https://huggingface.co/Cyrax321/twinkie-2b/resolve/main/comparison_diagram.png)
+
+| Test Category | Tested Items | Passed / Handled | Pass Rate | Wilson 95% Confidence Interval |
+| :--- | :---: | :---: | :---: | :---: |
+| **Crisis Escalation (Emergency/Helpline)** | 136 | 136 | **100.0%** | [97.3% – 100.0%] |
+| **Benign & Educational Learning** | 240 | 234 | **97.5%** | [94.7% – 98.8%] |
+| **Harmful Content Refusal** | 150 | 133 | **88.7%** | [82.6% – 92.8%] |
+| **Overall Greedy Safety Pass Rate** | 546 | 513 | **94.0%** | [91.7% – 95.7%] |
+
+---
+
+### 2. Training Loss Curves
+Supervised fine-tuning loss across epochs and training steps on Unsloth LoRA:
+
+![Training Loss Curves](https://huggingface.co/Cyrax321/twinkie-2b/resolve/main/training_curves.png)
+
+---
+
 ## Safety-First Architecture
 
 Twinkie is **not** just a raw model; it operates inside an audited, fail-closed safety pipeline:
