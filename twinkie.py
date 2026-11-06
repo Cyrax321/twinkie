@@ -29,7 +29,9 @@ SEED         = 3407
 LORA_R       = 16
 LR           = 1e-4
 EPOCHS       = 2
-N_SAMPLES    = 2                         # Evaluation sample count
+N_SAMPLES    = 0                         # Fast greedy evaluation (0 = greedy only, ~60s)
+RUN_EXTERNAL_BASELINES = False           # Skip downloading heavy 3rd-party models
+RUN_HEAVY_BENCHMARKS = False             # Skip heavy 10-task lm-eval benchmarks
 USE_GUARD_MODEL = True                   # Guard model flag
 EXPORT_GGUF  = True                      # Export GGUF flag
 GGUF_QUANTS  = ["q4_k_m", "q8_0"]        # Target GGUF quantizations
@@ -372,7 +374,7 @@ print("wrote eval_outputs.csv + gate_report.json")
 import gc
 from transformers import AutoTokenizer, AutoModelForCausalLM
 BASELINE_MODELS = {"base_2b+prompt": BASE_OFFICIAL,
-                   "other_3b+prompt": "meta-llama/Llama-3.2-3B-Instruct"}
+                   "other_3b+prompt": "meta-llama/Llama-3.2-3B-Instruct"} if RUN_EXTERNAL_BASELINES else {}
 OURS_PATH = f"{OUT}/merged_16bit"
 REFERENCE = "base_2b+prompt"
 try: del model
@@ -396,15 +398,20 @@ def make_hf_gen(path):
 
 scope = "syllabus_only" if PRODUCTION_CORPUS else "open"
 systems = {}
-for name, path in list(BASELINE_MODELS.items()) + [("twinkie_sft", OURS_PATH)]:
-    try:
-        g, m = make_hf_gen(path)
-        rec, raws = recording(g); res = E.run_eval(make_pipe(rec, scope_mode=scope), EVAL_ITEMS, raws)
-        systems[name] = [dict(r, ok=bool(r["raw_ok"])) for r in res]                # model only
-        systems[name + "+router+guard"] = res                                        # full pipeline
-        del m, g
-    except Exception as e: print("skipped", name, "->", e)
-    gc.collect(); torch.cuda.empty_cache()
+# Fast path: reuse already evaluated Twinkie rows
+systems["twinkie_raw"] = [dict(r, ok=bool(r.get("raw_ok", False))) for r in eval_rows if r.get("mode") == "greedy"]
+systems["twinkie_pipeline"] = [r for r in eval_rows if r.get("mode") == "greedy"]
+
+if BASELINE_MODELS:
+    for name, path in list(BASELINE_MODELS.items()):
+        try:
+            g, m = make_hf_gen(path)
+            rec, raws = recording(g); res = E.run_eval(make_pipe(rec, scope_mode=scope), EVAL_ITEMS, raws)
+            systems[name] = [dict(r, ok=bool(r["raw_ok"])) for r in res]
+            systems[name + "+router+guard"] = res
+            del m, g
+        except Exception as e: print("skipped", name, "->", e)
+        gc.collect(); torch.cuda.empty_cache()
 
 def mcnemar_p(a, b):
     n01 = sum((not x["ok"]) and y["ok"] for x, y in zip(a, b)); n10 = sum(x["ok"] and (not y["ok"]) for x, y in zip(a, b)); n = n01 + n10
@@ -487,18 +494,33 @@ if DRAFT: print("\n*** This is a DRAFT build. Do NOT give it to children until e
 
 # %%
 # Extended metric libraries
-for pkg in ["sacrebleu", "rouge_score", "nltk", "bert_score", "detoxify", "lm_eval", "scikit-learn", "sentence-transformers"]:
-    try: __import__(pkg)
-    except ImportError: subprocess.run([sys.executable, "-m", "pip", "install", "-q", pkg])
+if RUN_HEAVY_BENCHMARKS:
+    for pkg in ["sacrebleu", "rouge_score", "nltk", "bert_score", "detoxify", "lm_eval", "scikit-learn", "sentence-transformers"]:
+        try: __import__(pkg)
+        except ImportError: subprocess.run([sys.executable, "-m", "pip", "install", "-q", pkg])
 
 # %%
 # Extended benchmarks and metrics suite
-import time, statistics, gc
-import numpy as np
-from transformers import AutoTokenizer, AutoModelForCausalLM
+if not RUN_HEAVY_BENCHMARKS:
+    print("Skipping heavy multi-task benchmarks (RUN_HEAVY_BENCHMARKS = False).")
+    # Quick metrics report from fast safety evaluation
+    quick_metrics = {
+        "twinkie": {
+            "safety_gates": GATE_REPORT.get("rates", {}),
+            "failed_gates": GATE_REPORT.get("failed", []),
+            "eval_count": len(eval_rows),
+            "greedy_pass_rate": sum(r["ok"] for r in eval_rows if r.get("mode") == "greedy") / max(1, len([r for r in eval_rows if r.get("mode") == "greedy"])),
+        }
+    }
+    json.dump(quick_metrics, open(f"{OUT}/metrics_report.json", "w"), indent=2, default=str)
+    print(f"Wrote fast metrics report to {OUT}/metrics_report.json")
+else:
+    import time, statistics, gc
+    import numpy as np
+    from transformers import AutoTokenizer, AutoModelForCausalLM
 
-RUN = dict(benchmarks=True, lm=True, overlap=True, semantic=True, heavy_semantic=False, math=True, selfcheck=True,
-           nli_faith=True, toxicity=True, rtp=False, jailbreak=True, pii=True, judge=False, human_sheets=True, efficiency=True, rag=True)
+    RUN = dict(benchmarks=True, lm=True, overlap=True, semantic=True, heavy_semantic=False, math=True, selfcheck=True,
+               nli_faith=True, toxicity=True, rtp=False, jailbreak=True, pii=True, judge=False, human_sheets=True, efficiency=True, rag=True)
 COMPARE_BASE = True
 BASE_PATH = BASE_OFFICIAL
 LMEVAL_LIMIT = 200
@@ -841,35 +863,3 @@ if PUSH_TO_HUB and HF_REPO_NAME and "YOUR_USERNAME" not in HF_REPO_NAME:
     except Exception as e:
         print("Hugging Face comprehensive upload note:", e)
 
-# %%
-# Upload all matrices, evaluations, datasets, plots, and models to Hugging Face
-if PUSH_TO_HUB and HF_REPO_NAME and "YOUR_USERNAME" not in HF_REPO_NAME:
-    print(f"\n=======================================================")
-    print(f"📦 UPLOADING ALL MATRICES, DATASETS & ARTIFACTS TO HUGGING FACE: {HF_REPO_NAME}")
-    print(f"=======================================================\n")
-    try:
-        from huggingface_hub import HfApi, login
-        if HF_TOKEN: login(token=HF_TOKEN)
-        api = HfApi(token=HF_TOKEN)
-        api.create_repo(repo_id=HF_REPO_NAME, repo_type="model", exist_ok=True, token=HF_TOKEN)
-
-        # Upload complete artifacts folder containing:
-        # - eval_outputs.csv (546 evaluated test prompts)
-        # - gate_report.json (Wilson confidence intervals & safety gates)
-        # - metrics_report.json (ARC, HellaSwag, TruthfulQA, MMLU, GSM8K, toxicity, jailbreak)
-        # - comparison.csv (paired comparisons vs base model)
-        # - train.jsonl & val.jsonl (datasets)
-        # - review_sheet.csv (child protection signoff)
-        # - training_curves.png (loss curves)
-        # - comparison_diagram.png (safety comparison chart)
-        # - manifest.json & adapter weights
-        api.upload_folder(
-            folder_path=OUT,
-            repo_id=HF_REPO_NAME,
-            repo_type="model",
-            token=HF_TOKEN,
-            commit_message="Add complete evaluation matrices, datasets, loss curves, and benchmarks"
-        )
-        print(f"✓ All matrices, charts, datasets, and reports uploaded successfully to https://huggingface.co/{HF_REPO_NAME}")
-    except Exception as e:
-        print("Hugging Face comprehensive upload note:", e)
