@@ -537,7 +537,14 @@ if PUSH_TO_HUB and HF_REPO_NAME and "YOUR_USERNAME" not in HF_REPO_NAME:
         # - review_sheet.csv (child protection signoff)
         # - training_curves.png (loss curves)
         # - comparison_diagram.png (safety comparison chart)
-        # - manifest.json & adapter weights
+        # Rename local GGUFs if needed
+        import glob
+        for gf in glob.glob(f"{OUT}/**/*.gguf", recursive=True):
+            bn = os.path.basename(gf)
+            if "Qwen" in bn:
+                target_bn = bn.replace("Qwen3.5-2B", "twinkie-2b")
+                dest = os.path.join(os.path.dirname(gf), target_bn)
+                if not os.path.exists(dest): os.rename(gf, dest)
         api.upload_folder(
             folder_path=OUT,
             repo_id=HF_REPO_NAME,
